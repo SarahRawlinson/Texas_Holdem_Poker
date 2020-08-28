@@ -1,6 +1,7 @@
-import  random
+import random
 
-class Card_Deck():
+
+class CardDeck:
     def __init__(self):
         self.cards = []
 

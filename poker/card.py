@@ -1,4 +1,4 @@
-class Card():
+class Card:
     SUITS = ("Hearts", "Spades", "Diamonds", "Clubs")
     RANKS = ("2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace")
     _rank_value = {"2": 1, "3": 2, "4": 3, "5": 4, "6": 5, "7": 6, "8": 7, "9": 8, "10": 9, "Jack": 10, "Queen": 11,

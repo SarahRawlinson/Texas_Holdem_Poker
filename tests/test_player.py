@@ -1,11 +1,11 @@
 import unittest
-from unittest.mock import MagicMock
+# from unittest.mock import MagicMock
 from poker.player import Player
 from poker.hand import Hand
 from poker.card import Card
 
 
-class Player_Test(unittest.TestCase):
+class PlayerTest(unittest.TestCase):
     def test_scores_name(self):
         hand = Hand()
         player = Player(name="Sarah", hand=hand)

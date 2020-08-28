@@ -1,4 +1,4 @@
-class Hand():
+class Hand:
     def __init__(self, cards=None):
         self._set_up_hand(cards)
 

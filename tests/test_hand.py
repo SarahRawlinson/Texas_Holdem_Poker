@@ -3,7 +3,7 @@ from poker.card import Card
 import unittest
 
 
-class Test_Hand(unittest.TestCase):
+class TestHand(unittest.TestCase):
     def test_hand_type(self):
         hand = Hand()
         self.assertEqual(type(hand.cards), list)

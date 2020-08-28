@@ -2,7 +2,7 @@ import unittest
 from poker.card import Card
 
 
-class Test_Card(unittest.TestCase):
+class TestCard(unittest.TestCase):
     def test_rank(self):
         card = Card(rank="Queen", suit="Hearts")
         self.assertEqual(card.rank, "Queen")
