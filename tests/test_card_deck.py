@@ -5,6 +5,11 @@ from poker.card import Card
 
 
 class TestCardDeck(unittest.TestCase):
+
+    def test_has_length_of_card_count(self):
+        deck = CardDeck()
+        self.assertEqual(len(deck), 0)
+
     def test_card_deck_no_cards_at_start(self):
         card_deck = CardDeck()
         self.assertEqual(card_deck.cards, [])

@@ -18,6 +18,10 @@ class Hand:
     def remove_cards(self):
         self._set_up_hand(cards=None)
 
+    def __repr__(self):
+        cards_as_strings = [str(card) for card in self.cards]
+        return ", ".join(cards_as_strings)
+
     def __high_card_value__(self):
         value = 0
         for card in self.cards:

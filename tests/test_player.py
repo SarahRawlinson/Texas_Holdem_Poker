@@ -31,3 +31,11 @@ class PlayerTest(unittest.TestCase):
         player.hand = cards
 
         self.assertEqual(player.hand.cards, cards)
+
+    def test_player_decide_dop_out(self):
+        hand = Hand()
+        player = Player(name="Sarah", hand=hand)
+        player.fold()
+        self.assertEqual(player.active, False)
+        player.active = True
+        self.assertEqual(player.active, True)

@@ -8,6 +8,13 @@ class TestHand(unittest.TestCase):
         hand = Hand()
         self.assertEqual(type(hand.cards), list)
 
+    def test_hand_representation(self):
+        hand = Hand()
+        cards = [Card("7", "Hearts"), Card("8", "Hearts")]
+        hand.add_cards(cards)
+        cards.sort(reverse=True)
+        self.assertEqual(repr(hand), "8 of Hearts, 7 of Hearts")
+
     def test_receive_and_store_cards(self):
         hand = Hand()
         cards = [Card("7", "Hearts"), Card("8", "Hearts")]
@@ -262,16 +269,16 @@ class TestHand(unittest.TestCase):
         cards_a.remove_cards()
         self.assertEqual(cards_a == cards_b, False)
 
-    # def test_hand_value_low_straight_7_cards(self):
-    #     hand = [
-    #         Card("2", "Clubs"),
-    #         Card("3", "Diamonds"),
-    #         Card("4", "Hearts"),
-    #         Card("5", "Diamonds"),
-    #         Card("6", "Diamonds"),
-    #         Card("10", "Diamonds"),
-    #         Card("3", "Hearts")
-    #     ]
-    #     cards = Hand()
-    #     cards.add_cards(hand)
-    #     self.assertEqual(cards.hand, "Straight")
+    def test_hand_value_low_straight_7_cards(self):
+        hand = [
+            Card("2", "Clubs"),
+            Card("3", "Diamonds"),
+            Card("4", "Hearts"),
+            Card("5", "Diamonds"),
+            Card("6", "Diamonds"),
+            Card("10", "Diamonds"),
+            Card("3", "Hearts")
+        ]
+        cards = Hand()
+        cards.add_cards(hand)
+        self.assertEqual(cards.hand, "Straight")
