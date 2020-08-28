@@ -36,3 +36,23 @@ class Test_Card(unittest.TestCase):
     def test_card_only_valid_suit(self):
         with self.assertRaises(ValueError):
             Card(rank="2", suit="Jack")
+
+    def test_are_equal_to_equivalent_card(self):
+        card_a = Card(rank="2", suit="Hearts")
+        card_b = Card(rank="2", suit="Hearts")
+        self.assertEqual(card_a, card_b)
+
+    def test_all_cards(self):
+        self.assertEqual(len(Card.RANKS) * len(Card.SUITS), len(Card.create_cards()))
+
+    def test_card_value(self):
+        card = Card("Ace", "Clubs")
+        self.assertEqual(card.value, 13)
+        
+    def test_sort_method_on_cards(self):
+        card_ace = Card(rank="Ace", suit="Hearts")
+        card_two = Card(rank="2", suit="Hearts")
+        card_queen = Card(rank="Queen", suit="Hearts")
+        cards = [card_queen, card_two, card_ace]
+        cards.sort()
+        self.assertEqual(cards, [card_two, card_queen, card_ace])
