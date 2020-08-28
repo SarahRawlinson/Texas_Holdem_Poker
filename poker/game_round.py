@@ -16,6 +16,7 @@ class GameRound:
         # betting
         # deal river
         # winner found
+        #this class deals hands to players
         pass
 
     def _shuffle_deck(self):
