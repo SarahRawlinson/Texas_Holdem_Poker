@@ -29,7 +29,6 @@ class PlayerTest(unittest.TestCase):
         player = Player(name="Sarah", hand=hand)
         cards = [Card("Ace", "Hearts"), Card("7", "Hearts")]
         player.hand = cards
-
         self.assertEqual(player.hand.cards, cards)
 
     def test_player_decide_dop_out(self):
@@ -65,6 +64,6 @@ class PlayerTest(unittest.TestCase):
         player = Player("Sarah", hand)
         player.add_chips(50)
         bet = player.bet(20)
-        self.assertEqual(20, 20)
+        self.assertEqual(bet, 20)
         self.assertEqual(player.chips, 30)
 
