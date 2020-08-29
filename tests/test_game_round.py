@@ -1,6 +1,10 @@
 import unittest
 from unittest.mock import MagicMock, call
 from poker.game_round import GameRound
+from poker.card_deck import CardDeck
+from poker.card import Card
+from poker.player import Player
+from poker.hand import Hand
 
 
 class TestGameRound(unittest.TestCase):
@@ -47,4 +51,24 @@ class TestGameRound(unittest.TestCase):
         player1.active = False
         return_players = game_round.check_for_inactive_players()
         self.assertEqual(return_players, [player1])
+
+    def test_community_cards(self):
+        cards = Card.create_cards()
+        deck = CardDeck()
+        deck.add_cards(cards)
+        player1 = Player("Sarah", Hand())
+        players = [player1]
+        game_round = GameRound(deck=deck, players=players)
+        game_round.play()
+        self.assertEqual(len(game_round.community_cards), 5)
+        self.assertEqual(len(player1.hand.cards), 7)
+
+    def test_community_pot(self):
+        deck = MagicMock()
+        player1 = Player("Sarah", Hand())
+        player1.add_chips(50)
+        players = [player1]
+        game_round = GameRound(deck=deck, players=players)
+        game_round.bet(player1, 20)
+        self.assertEqual(game_round.community_pot, 20)
 
