@@ -62,12 +62,22 @@ class GameRound:
 
     def find_winner(self):
         winner = None
+        winners = []
         winning_score = 0
+        draw = False
         for player in self._players:
             if player.hand.value > winning_score:
                 winning_score = player.hand.value
-                winner = player
-        return winner
+                winner = [player]
+                winners = [player]
+            elif winning_score == player.hand.value:
+                draw = True
+                winners.append(player)
+
+        if not draw:
+            return winner
+        else:
+            return winners
 
     def _get_community_cards(self):
         return self._community_cards
