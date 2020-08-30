@@ -12,14 +12,31 @@ class GameRound:
         # deal players
         self._deal_to_players()
         # betting
+        print("*" * 10)
+        print("round 1 betting")
+        print("*" * 10)
+        self._check_for_bets(5)
         # deal flop
         self._deal_community_cards(3)
         # betting
+        print("*" * 10)
+        print("round 2 betting")
+        print("*" * 10)
+        self._check_for_bets(0)
         # deal turn
         self._deal_community_cards(1)
         # betting
+        print("*" * 10)
+        print("round 3 betting")
+        print("*" * 10)
+        self._check_for_bets(0)
         # deal river
         self._deal_community_cards(1)
+        # final bet
+        print("*" * 10)
+        print("round 4 betting")
+        print("*" * 10)
+        self._check_for_bets(0)
         # winner found
         # winner = self._find_winner()
 
@@ -36,6 +53,37 @@ class GameRound:
         self._community_cards.extend(community_cards)
         for player in self.check_for_active_players():
             player.hand = community_cards
+
+    def _check_for_bets(self, start_bet):
+        bet_chips = True
+        active_bet = start_bet
+        if start_bet > 0:
+            state = "call"
+        else:
+            state = "check"
+        player_bets = {}
+        while bet_chips and len(self.check_for_active_players()) > 1:
+            for player in self.check_for_active_players():
+                player_bets.setdefault(player.name, 0)
+                current_bets = player_bets[player.name]
+                needed_bet = active_bet - current_bets
+                bet = player.next_action(state, needed_bet)
+                player_bets[player.name] += int(bet)
+                # bet = bet + needed_bet
+                full_bet = bet
+                if full_bet > active_bet:
+                    print(f"{player.name} raises {full_bet - active_bet}")
+                    active_bet = bet + needed_bet
+                    state = "call"
+                elif bet > 0:
+                    print(f"{player.name} bet {bet}")
+                self.bet(player, bet)
+
+            match = False
+            for player in self.check_for_active_players():
+                if player_bets[player.name] != active_bet:
+                    match = True
+            bet_chips = match
 
     def bet(self, player, amount):
         self._community_pot += player.bet(amount)
@@ -75,8 +123,21 @@ class GameRound:
                 winners.append(player)
 
         if not draw:
+            winner[0].add_chips(self._community_pot)
+            name = winner[0].name
+            print(f"The winner is {name} winning {self._community_pot} chips")
+            self._community_pot = 0
             return winner
         else:
+            if self._community_pot > 0:
+                shared_pot = self._community_pot / len(winners)
+                names = []
+                for winner_name in winners:
+                    winner_name.add_chips(shared_pot)
+                    names.append(winner_name.name)
+                names = ", ".join(names)
+                print(f"The winners are {names} winning {shared_pot} chips")
+                self._community_pot = 0
             return winners
 
     def _get_community_cards(self):

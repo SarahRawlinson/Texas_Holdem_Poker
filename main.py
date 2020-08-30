@@ -3,6 +3,7 @@ from poker.card_deck import CardDeck
 from poker.hand import Hand
 from poker.player import Player
 from poker.game_round import GameRound
+from poker.ai import AI
 
 # from main import deck, cards, hand1, hand2, player1, player2
 
@@ -20,7 +21,15 @@ player2 = Player("Mark", hand2)
 player3 = Player("Steven", hand3)
 player4 = Player("Barry", hand4)
 
+ai1 = AI(player=player1)
+ai2 = AI(player=player2)
+ai3 = AI(player=player3)
+ai4 = AI(player=player4)
+
 players = [player1, player2, player3, player4]
+
+for player in players:
+    player.add_chips(100)
 
 game = GameRound(players=players, deck=deck)
 game.play()
