@@ -7,38 +7,42 @@ class GameRound:
 
     def play(self):
 
+        rounds = {1: {"bet": 0, "cards": 0}, 2: {"bet": 0, "cards": 0}, 3: {"bet": 0, "cards": 0},
+                  4: {"bet": 0, "cards": 0}}
         # shuffle cards
         self._shuffle_deck()
         # deal players
         self._deal_to_players()
-        # betting
+
+        for round_number in rounds:
+            # deal
+            cards = rounds[round_number]["cards"]
+            bet = rounds[round_number]["bet"]
+            if cards > 0:
+                self._deal_community_cards(cards)
+            self._new_round(round_number, bet)
+            if len(self.check_for_active_players()) == 1:
+                break
+
+        self.find_winner()
+
+    def _new_round(self, number, bets):
+        print("*" * 20)
+        print(f"round {number} betting")
         print("*" * 10)
-        print("round 1 betting")
+        print(f"Community cards : {self.community_cards}")
         print("*" * 10)
-        self._check_for_bets(5)
-        # deal flop
-        self._deal_community_cards(3)
-        # betting
+        # for player in self.check_for_active_players():
+        #     print(f"{player.name} : cards : [{player.hand}] chips : [{player.chips}]")
+        self.print_player_cards()
         print("*" * 10)
-        print("round 2 betting")
+        self._check_for_bets(bets)
         print("*" * 10)
-        self._check_for_bets(0)
-        # deal turn
-        self._deal_community_cards(1)
-        # betting
-        print("*" * 10)
-        print("round 3 betting")
-        print("*" * 10)
-        self._check_for_bets(0)
-        # deal river
-        self._deal_community_cards(1)
-        # final bet
-        print("*" * 10)
-        print("round 4 betting")
-        print("*" * 10)
-        self._check_for_bets(0)
-        # winner found
-        # winner = self._find_winner()
+        print(f"Community pot : {self._community_pot}")
+
+    def print_player_cards(self):
+        for player in self.check_for_active_players():
+            print(f"{player.name} : cards : [{player.hand}] chips : [{player.chips}] hand : [{player.hand.hand}] value : [{player.hand.score}]")
 
     def _shuffle_deck(self):
         self._deck.shuffle()
@@ -76,7 +80,9 @@ class GameRound:
                     active_bet = bet + needed_bet
                     state = "call"
                 elif bet > 0:
-                    print(f"{player.name} bet {bet}")
+                    print(f"{player.name} calls")
+                elif player.active:
+                    print(f"{player.name} checks")
                 self.bet(player, bet)
 
             match = False
@@ -121,11 +127,12 @@ class GameRound:
             elif winning_score == player.hand.value:
                 draw = True
                 winners.append(player)
+        self.print_winner(winners)
 
         if not draw:
             winner[0].add_chips(self._community_pot)
             name = winner[0].name
-            print(f"The winner is {name} winning {self._community_pot} chips")
+            print(f"{name} won {self._community_pot} chips")
             self._community_pot = 0
             return winner
         else:
@@ -136,15 +143,27 @@ class GameRound:
                     winner_name.add_chips(shared_pot)
                     names.append(winner_name.name)
                 names = ", ".join(names)
-                print(f"The winners are {names} winning {shared_pot} chips")
+                print(f"{names} all won {shared_pot} chips")
                 self._community_pot = 0
             return winners
 
     def _get_community_cards(self):
-        return self._community_cards
+        cards_as_strings = [str(card) for card in self._community_cards]
+        return ", ".join(cards_as_strings)
 
     def _get_community_pot(self):
         return self._community_pot
+
+    def print_winner(self, winner):
+        if len(winner) == 1:
+            winner = winner[0]
+            print(f"The Winner is {winner.name} with a {winner.hand.hand}. "
+                  f"The winning cards where {winner.hand.hand_cards}.")
+        else:
+            names = []
+            for win in winner:
+                names.append(win.name)
+            print(f"Players Draw, winners are {names}")
 
     deck = property(_get_deck)
     players = property(_get_players)

@@ -34,16 +34,16 @@ for player in players:
 game = GameRound(players=players, deck=deck)
 game.play()
 
-for player in players:
-    print(f"player {player.name} had a {player.hand.hand} with a value of {player.hand.value}")
-winner = game.find_winner()
-if len(winner) == 1:
-    winner = winner[0]
-    print(f"The Winner is {winner.name} with a {winner.hand.hand}.\
-    The winning cards where {winner.hand}.")
-else:
-    names = []
-    for win in winner:
-        names.append(win.name)
+# for player in players:
+#     print(f"player {player.name} had a {player.hand.hand} with a value of {player.hand.score}")
+# winner = game.find_winner()
+#
+# if len(winner) == 1:
+#     winner = winner[0]
+#     print(f"The Winner is {winner.name} with a {winner.hand.hand}. The winning cards where {winner.hand.hand_cards}.")
+# else:
+#     names = []
+#     for win in winner:
+#         names.append(win.name)
 
-    print(f"Players Draw, winners are {names}")
+    # print(f"Players Draw, winners are {names}")

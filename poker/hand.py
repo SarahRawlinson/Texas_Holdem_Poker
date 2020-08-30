@@ -10,6 +10,7 @@ class Hand:
     def __init__(self, cards=None):
         self._set_up_hand(cards)
         self._hand_dictionary = self.__hand_dictionary
+        self._cards = []
 
     def __lt__(self, other):
         return self.score < other.score
@@ -51,7 +52,7 @@ class Hand:
                 break
         self._hand_cards_value = self._get_hand_value(self._hand)
         hand = self._hand
-        self._score = ((hands[hand]["value"] ** hands[hand]["value"]) * hands[hand]["score"])
+        self._score = hands[hand]["value"] + hands[hand]["score"]
         self._hand_cards = hands[hand]["cards"]
 
     def _check_hands(self):
@@ -155,16 +156,16 @@ class Hand:
     @property
     def __hand_dictionary(self):
         hands = {
-            "High Card": {"is true": True, "value": 10, "score": 0, "cards": []},
-            "Pair": {"is true": False, "value": 20, "score": 0, "cards": []},
-            "Two Pair": {"is true": False, "value": 30, "score": 0, "cards": []},
-            "Three of a Kind": {"is true": False, "value": 40, "score": 0, "cards": []},
-            "Straight": {"is true": False, "value": 50, "score": 0, "cards": []},
-            "Flush": {"is true": False, "value": 60, "score": 0, "cards": []},
-            "Full House": {"is true": False, "value": 70, "score": 0, "cards": []},
-            "Four of a Kind": {"is true": False, "value": 80, "score": 0, "cards": []},
-            "Straight Flush": {"is true": False, "value": 90, "score": 0, "cards": []},
-            "Royal Flush": {"is true": False, "value": 100, "score": 0, "cards": []}
+            "High Card": {"is true": True, "value": 100, "score": 0, "cards": []},
+            "Pair": {"is true": False, "value": 200, "score": 0, "cards": []},
+            "Two Pair": {"is true": False, "value": 300, "score": 0, "cards": []},
+            "Three of a Kind": {"is true": False, "value": 400, "score": 0, "cards": []},
+            "Straight": {"is true": False, "value": 500, "score": 0, "cards": []},
+            "Flush": {"is true": False, "value": 600, "score": 0, "cards": []},
+            "Full House": {"is true": False, "value": 700, "score": 0, "cards": []},
+            "Four of a Kind": {"is true": False, "value": 800, "score": 0, "cards": []},
+            "Straight Flush": {"is true": False, "value": 900, "score": 0, "cards": []},
+            "Royal Flush": {"is true": False, "value": 1000, "score": 0, "cards": []}
         }
         return hands
 
