@@ -9,6 +9,7 @@ class Hand:
 
     def __init__(self, cards=None):
         self._set_up_hand(cards)
+        self._hand_dictionary = self.__hand_dictionary
 
     def __lt__(self, other):
         return self.score < other.score
@@ -17,27 +18,29 @@ class Hand:
         return self.hand == other.hand and self.score == other.score
 
     def __repr__(self):
-        cards_as_strings = [str(card) for card in self.cards]
+        cards_as_strings = [str(card) for card in self._cards]
         return ", ".join(cards_as_strings)
 
     def add_cards(self, cards):
-        self.cards.extend(cards)
+        self._cards.extend(cards)
+        self._hand_dictionary = self.__hand_dictionary
         self.__hand__()
 
     def remove_cards(self):
         self._set_up_hand(cards=None)
 
     def _set_up_hand(self, cards):
-        self._hand_dictionary = self.__hand_dictionary
+        self._hand_dictionary = self.__hand_dictionary        
+        self._hand = "No Hand"
+        self._score = 0
+        self._hand_cards_value = 0
+        self._hand_cards = []
         if cards is not None:
-            self.cards = cards
+            self._cards = cards
             self.__hand__()
         else:
-            self.cards = []
-            self._hand = "No Hand"
-            self._score = 0
-            self._hand_cards_value = 0
-
+            self._cards = []
+            
     def __hand__(self):
         hands = self._hand_dictionary
         self._check_hands()
@@ -49,9 +52,10 @@ class Hand:
         self._hand_cards_value = self._get_hand_value(self._hand)
         hand = self._hand
         self._score = ((hands[hand]["value"] ** hands[hand]["value"]) * hands[hand]["score"])
+        self._hand_cards = hands[hand]["cards"]
 
     def _check_hands(self):
-        check = CheckRanks(self.cards)
+        check = CheckRanks(self._cards)
         ranks = check.list_ranks
         suits = check.list_suits
         self._check_high_score()
@@ -60,7 +64,7 @@ class Hand:
             self._check_three_of_kind(ranks[rank]["cards"])
             self._check_four_of_kind(ranks[rank]["cards"])
         self._check_full_house()
-        self._check_for_flush(self.cards)
+        self._check_for_flush(self._cards)
         self._check_for_straight(ranks, suits)
         self._check_for_straight_flush()
         self._check_for_royal_flush()
@@ -81,18 +85,18 @@ class Hand:
         return self._hand_dictionary[hand]["cards"]
 
     def _check_high_score(self):
-        high_card = HighCard(self.cards)
+        high_card = HighCard(self._cards)
         if high_card.is_valid:
             self._set_hand("High Card", high_card.value, high_card.high_card)
 
     def _check_pairs(self, cards):
         pair = Duplicated(cards, 2)
-        if not pair.is_valid:
-            return
-        if self._hand_true("Pair"):
-            self._set_hand("Two Pair", pair.value + self._get_hand_value("Pair"), cards)
-        else:
-            self._set_hand("Pair", pair.value, cards)
+        if pair.is_valid:
+            if self._hand_true("Pair"):
+                self._set_hand("Two Pair", pair.value + self._get_hand_value("Pair"),
+                               pair.cards + self._get_hand_cards("Pair"))
+            else:
+                self._set_hand("Pair", pair.value, pair.cards)
 
     def _check_three_of_kind(self, cards):
         three = Duplicated(cards, 3)
@@ -141,6 +145,13 @@ class Hand:
     def _return_value(self):
         return self._hand_cards_value
 
+    def _return_cards(self):
+        return self._cards
+
+    def _return_hand_cards(self):
+        cards_as_strings = [str(card) for card in self._hand_cards]
+        return ", ".join(cards_as_strings)
+
     @property
     def __hand_dictionary(self):
         hands = {
@@ -160,4 +171,6 @@ class Hand:
     hand = property(_return_hand)
     score = property(_return_score)
     value = property(_return_value)
+    cards = property(_return_cards)
+    hand_cards = property(_return_hand_cards)
 

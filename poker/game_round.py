@@ -21,8 +21,7 @@ class GameRound:
         # deal river
         self._deal_community_cards(1)
         # winner found
-
-        pass
+        # winner = self._find_winner()
 
     def _shuffle_deck(self):
         self._deck.shuffle()
@@ -60,6 +59,15 @@ class GameRound:
             if not player.active:
                 player_list.append(player)
         return player_list
+
+    def find_winner(self):
+        winner = None
+        winning_score = 0
+        for player in self._players:
+            if player.hand.value > winning_score:
+                winning_score = player.hand.value
+                winner = player
+        return winner
 
     def _get_community_cards(self):
         return self._community_cards

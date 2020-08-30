@@ -12,14 +12,21 @@ deck.add_cards(cards)
 
 hand1 = Hand()
 hand2 = Hand()
+hand3 = Hand()
+hand4 = Hand()
 
 player1 = Player("Sarah", hand1)
-player2 = Player("Bob", hand2)
+player2 = Player("Mark", hand2)
+player3 = Player("Steven", hand3)
+player4 = Player("Barry", hand4)
 
-players = [player1, player2]
+players = [player1, player2, player3, player4]
 
 game = GameRound(players=players, deck=deck)
 game.play()
 
-print(player1.hand)
-print(player2.hand)
+for player in players:
+    print(f"player {player.name} had a {player.hand.hand} with a value of {player.hand.value}")
+winner = game.find_winner()
+print(f"The Winner is {winner.name} with a {winner.hand.hand}.\
+    The winning cards where {winner.hand}.")
