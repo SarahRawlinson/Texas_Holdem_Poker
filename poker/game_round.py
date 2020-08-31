@@ -107,14 +107,21 @@ class GameRound:
             state = "check"
         player_bets = {}
         first_round = True
+        last_player = None
         while bet_chips and len(self.check_for_active_players()) > 1:
-            for player in self.check_for_active_players():
+            players = self.check_for_active_players()
+            for player in players:
+                if player.name == last_player:
+                    last_player = player.name
+                    continue
+                last_player = player.name
+                # print("Next player")
                 if 1 == len(self.check_for_active_players()):
                     bet_chips = False
                     break
                 player_bets.setdefault(player.name, 0)
-                current_bets = player_bets[player.name]
-                needed_bet = active_bet - current_bets
+                current_bets = int(player_bets[player.name])
+                needed_bet = int(active_bet) - int(current_bets)
                 if needed_bet > 0:
                     print(f"{player.name} needs to bet {needed_bet} to meet the active bet of {active_bet}")
                 # if not first_round and needed_bet == 0 and player.active:
@@ -130,6 +137,7 @@ class GameRound:
                     print(f"{player.name} raises {full_bet - active_bet}")
                     active_bet = bet + current_bets
                     state = "call"
+                    self.bet(player, bet)
                 elif bet > 0:
                     print(f"{player.name} calls")
                     if not first_round:
@@ -137,18 +145,15 @@ class GameRound:
                         break
                 elif player.active:
                     print(f"{player.name} checks")
-                self.bet(player, bet)
-
             stop_run = False
             for active in self.check_for_active_players():
                 # print(player_bets[active.name])
                 # print(active.name)
                 # print(active_bet)
-                if player_bets[active.name] != active_bet:
+                if int(player_bets[active.name]) != int(active_bet):
                     stop_run = True
                     break
-
-
+            # players = self.check_for_active_players()
             bet_chips = stop_run
             first_round = False
 

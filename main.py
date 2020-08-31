@@ -4,6 +4,7 @@ from poker.hand import Hand
 from poker.player import Player
 from poker.game_round import GameRound
 from poker.ai import AI
+from poker.human_player import Human
 
 # from main import deck, cards, hand1, hand2, player1, player2
 
@@ -23,7 +24,7 @@ player3 = Player("Steven", hand3)
 player4 = Player("Barry", hand4)
 player5 = Player("Boris", hand5)
 
-ai1 = AI(player=player1)
+ai1 = Human(player=player1)
 ai2 = AI(player=player2)
 ai3 = AI(player=player3)
 ai4 = AI(player=player4)

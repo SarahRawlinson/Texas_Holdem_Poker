@@ -54,9 +54,9 @@ class Player:
     def next_action(self, game_responce, bet, total_bet):
         if self.controller is None:
             return 0
-        if game_responce == "check":
+        if bet == 0:
             return self.check_for_bet(bet, total_bet)
-        elif game_responce == "call":
+        elif bet > 0:
             self.controller.check_for_call(bet, total_bet)
             if self.controller.fold:
                 self.fold()
