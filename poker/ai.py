@@ -14,11 +14,15 @@ class AI:
         player.controller = self
 
     def make_decision(self, bet):
+        wants_to_bluff = False
         if bet > 0:
-            self.check_for_call(bet)
+            # self.check_for_call(bet)
+            if self.raise_bet:
+                self.wants_to_bet = True
+                self.bet()
+                wants_to_bluff = random.choice([True, False, False, False])
         else:
-            wants_to_bluff = False
-            if self.player.chips > 50 and self.player.hand.value >= 7:
+            if self.player.chips > 50 and self.player.hand.score >= 110:
                 print(f"{self.player.name} thinks they should bet")
                 self.wants_to_bet = True
                 self.bet()
@@ -28,38 +32,38 @@ class AI:
                 print(f"{self.player.name} decides not to bet")
                 self.wants_to_bet = False
                 self.check = True
-            if wants_to_bluff:
-                print(f"{self.player.name} decides to change change there mind")
-                self.bluff()
+        if wants_to_bluff:
+            print(f"{self.player.name} decides to change change there mind")
+            self.bluff()
 
     def bet(self):
         card_amount = len(self.player.hand.cards)
-        card_value = self.player.hand.value
+        card_value = self.player.hand.score
         if card_amount == 2:
-            if card_value > 13:
+            if card_value > 110:
                 amount_to_bet = 10
-            elif card_value > 20:
+            elif card_value > 200:
                 amount_to_bet = 30
             else:
                 amount_to_bet = 5
         elif card_amount == 5:
-            if card_value > 20:
+            if card_value > 200:
                 amount_to_bet = 10
-            elif card_value > 30:
+            elif card_value > 300:
                 amount_to_bet = 30
             else:
                 amount_to_bet = 5
         elif card_amount == 6:
-            if card_value > 25:
+            if card_value > 250:
                 amount_to_bet = 10
-            elif card_value > 30:
+            elif card_value > 300:
                 amount_to_bet = 30
             else:
                 amount_to_bet = 2
         elif card_amount == 7:
-            if card_value > 30:
+            if card_value > 200:
                 amount_to_bet = 20
-            elif card_value > 40:
+            elif card_value > 400:
                 amount_to_bet = 30
             else:
                 amount_to_bet = 2
@@ -74,42 +78,42 @@ class AI:
 
     def check_for_call(self, amount):
         card_amount = len(self.player.hand.cards)
-        card_value = self.player.hand.value
+        card_value = self.player.hand.score
         call = False
         raise_bet = False
         all_in = False
         fold = False
         if self.player.chips > amount:
             if card_amount == 2:
-                if card_value > 16:
+                if card_value > 200:
                     raise_bet = True
-                elif card_value >= 7:
+                elif card_value >= 105:
                     call = True
                 else:
                     fold = True
             elif card_amount == 5:
-                if card_value > 20:
+                if card_value > 200:
                     raise_bet = True
-                elif card_value >= 12:
+                elif card_value >= 110:
                     call = True
                 else:
                     fold = True
             elif card_amount == 6:
-                if card_value > 25:
+                if card_value > 300:
                     raise_bet = True
-                elif card_value >= 18:
+                elif card_value >= 150:
                     call = True
                 else:
                     fold = True
             elif card_amount == 7:
-                if card_value >= 22:
+                if card_value >= 200:
                     call = True
                 else:
                     fold = True
-            if card_value >= 30:
+            if card_value >= 300:
                 raise_bet = True
         else:
-            if card_value >= 30:
+            if card_value >= 200:
                 all_in = True
             else:
                 fold = True

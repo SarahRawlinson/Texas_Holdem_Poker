@@ -7,8 +7,8 @@ class GameRound:
 
     def play(self):
 
-        rounds = {1: {"bet": 0, "cards": 0}, 2: {"bet": 0, "cards": 0}, 3: {"bet": 0, "cards": 0},
-                  4: {"bet": 0, "cards": 0}}
+        rounds = {1: {"bet": 0, "cards": 0}, 2: {"bet": 0, "cards": 3}, 3: {"bet": 0, "cards": 1},
+                  4: {"bet": 0, "cards": 1}}
         # shuffle cards
         self._shuffle_deck()
         # deal players
@@ -29,7 +29,7 @@ class GameRound:
     def _new_round(self, number, bets):
         print("*" * 20)
         print(f"round {number} betting")
-        print("*" * 10)
+        print("*" * 20)
         print(f"Community cards : {self.community_cards}")
         print("*" * 10)
         # for player in self.check_for_active_players():
@@ -42,7 +42,8 @@ class GameRound:
 
     def print_player_cards(self):
         for player in self.check_for_active_players():
-            print(f"{player.name} : cards : [{player.hand}] chips : [{player.chips}] hand : [{player.hand.hand}] value : [{player.hand.score}]")
+            print(f"{player.name} : cards : [{player.two_cards}] chips : [{player.chips}] hand : [{player.hand.hand}] "
+                  f"value : [{player.hand.score}]")
 
     def _shuffle_deck(self):
         self._deck.shuffle()
@@ -66,30 +67,47 @@ class GameRound:
         else:
             state = "check"
         player_bets = {}
+        first_round = True
         while bet_chips and len(self.check_for_active_players()) > 1:
             for player in self.check_for_active_players():
                 player_bets.setdefault(player.name, 0)
                 current_bets = player_bets[player.name]
                 needed_bet = active_bet - current_bets
+                if needed_bet > 0:
+                    print(f"{player.name} needs to bet {needed_bet} to meet the active bet of {active_bet}")
+                # if not first_round and needed_bet == 0 and player.active:
+                #     break
+                if needed_bet < 0:
+                    needed_bet = 0
                 bet = player.next_action(state, needed_bet)
+                # print(bet)
                 player_bets[player.name] += int(bet)
                 # bet = bet + needed_bet
-                full_bet = bet
+                full_bet = bet + current_bets
                 if full_bet > active_bet:
                     print(f"{player.name} raises {full_bet - active_bet}")
-                    active_bet = bet + needed_bet
+                    active_bet = bet + current_bets
                     state = "call"
                 elif bet > 0:
                     print(f"{player.name} calls")
+                    self.bet(player, bet)
+                    if not first_round:
+                        break
                 elif player.active:
                     print(f"{player.name} checks")
                 self.bet(player, bet)
 
-            match = False
-            for player in self.check_for_active_players():
-                if player_bets[player.name] != active_bet:
-                    match = True
-            bet_chips = match
+            stop_run = False
+            for active in self.check_for_active_players():
+                # print(player_bets[active.name])
+                # print(active.name)
+                # print(active_bet)
+                if player_bets[active.name] != active_bet:
+                    stop_run = True
+                    break
+
+            bet_chips = stop_run
+            first_round = False
 
     def bet(self, player, amount):
         self._community_pot += player.bet(amount)
@@ -119,12 +137,12 @@ class GameRound:
         winners = []
         winning_score = 0
         draw = False
-        for player in self._players:
-            if player.hand.value > winning_score:
-                winning_score = player.hand.value
+        for player in self.check_for_active_players():
+            if player.hand.score > winning_score:
+                winning_score = player.hand.score
                 winner = [player]
                 winners = [player]
-            elif winning_score == player.hand.value:
+            elif winning_score == player.hand.score:
                 draw = True
                 winners.append(player)
         self.print_winner(winners)
@@ -163,7 +181,8 @@ class GameRound:
             names = []
             for win in winner:
                 names.append(win.name)
-            print(f"Players Draw, winners are {names}")
+            names = " and ".join(names)
+            print(f"Players Draw, winners are {names} the winning hands where {winner[0].hand}")
 
     deck = property(_get_deck)
     players = property(_get_players)
