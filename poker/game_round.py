@@ -4,27 +4,66 @@ class GameRound:
         self._players = players
         self._community_cards = []
         self._community_pot = 0
+        self.infinite = False
+        self.game_qty = 1
+        self.game_number = 0
+        self.rounds = {1: {"bet": 0, "cards": 0}, 2: {"bet": 0, "cards": 3}, 3: {"bet": 0, "cards": 1},
+                       4: {"bet": 0, "cards": 1}}
+
+    def set_game_qty(self, infinite=False, game_qty=1):
+        self.infinite = infinite
+        self.game_qty = game_qty
+
+    def print_new_game(self):
+        print("*" * 50)
+        print("#" * 50)
+        print(f"New game!, Game {self.game_number}")
+        print("*" * 20)
+        names = []
+        for player in self.check_for_active_players():
+            names.append(player.name)
+        names = ", ".join(names)
+        print(f"Active Players : {names}")
+        print("*" * 20)
 
     def play(self):
 
-        rounds = {1: {"bet": 0, "cards": 0}, 2: {"bet": 0, "cards": 3}, 3: {"bet": 0, "cards": 1},
-                  4: {"bet": 0, "cards": 1}}
-        # shuffle cards
-        self._shuffle_deck()
-        # deal players
-        self._deal_to_players()
+        while self.game_qty > 0 and len(self.check_for_active_players()) > 1:
+            self.game_number += 1
 
-        for round_number in rounds:
-            # deal
-            cards = rounds[round_number]["cards"]
-            bet = rounds[round_number]["bet"]
-            if cards > 0:
-                self._deal_community_cards(cards)
-            self._new_round(round_number, bet)
-            if len(self.check_for_active_players()) == 1:
-                break
+            self.print_new_game()
+            # shuffle cards
+            self._shuffle_deck()
+            # deal players
+            self._deal_to_players()
 
-        self.find_winner()
+            for round_number in self.rounds:
+                # deal
+                cards = self.rounds[round_number]["cards"]
+                bet = self.rounds[round_number]["bet"]
+                if cards > 0:
+                    self._deal_community_cards(cards)
+                self._new_round(round_number, bet)
+                if len(self.check_for_active_players()) == 1:
+                    break
+
+            self.find_winner()
+            community_cards = self._community_cards.copy()
+
+            for player in self._players:
+                cards = player.remove_cards()
+                community_cards.extend(cards)
+                if player.chips > 0:
+                    player.active = True
+                else:
+                    player.active = False
+
+            self._community_cards = []
+
+            self._deck.add_cards(community_cards)
+
+            if not self.infinite:
+                self.game_qty -= 1
 
     def _new_round(self, number, bets):
         print("*" * 20)
@@ -70,6 +109,9 @@ class GameRound:
         first_round = True
         while bet_chips and len(self.check_for_active_players()) > 1:
             for player in self.check_for_active_players():
+                if 1 == len(self.check_for_active_players()):
+                    bet_chips = False
+                    break
                 player_bets.setdefault(player.name, 0)
                 current_bets = player_bets[player.name]
                 needed_bet = active_bet - current_bets
@@ -79,7 +121,7 @@ class GameRound:
                 #     break
                 if needed_bet < 0:
                     needed_bet = 0
-                bet = player.next_action(state, needed_bet)
+                bet = player.next_action(state, needed_bet, current_bets)
                 # print(bet)
                 player_bets[player.name] += int(bet)
                 # bet = bet + needed_bet
@@ -90,8 +132,8 @@ class GameRound:
                     state = "call"
                 elif bet > 0:
                     print(f"{player.name} calls")
-                    self.bet(player, bet)
                     if not first_round:
+                        self.bet(player, bet)
                         break
                 elif player.active:
                     print(f"{player.name} checks")
@@ -106,11 +148,16 @@ class GameRound:
                     stop_run = True
                     break
 
+
             bet_chips = stop_run
             first_round = False
 
     def bet(self, player, amount):
+        if player.chips < amount:
+            amount = player.chips
+            print(f"{player.name} has gone all in")
         self._community_pot += player.bet(amount)
+        print(f"{player.name} now has {player.chips} chips")
 
     def _get_deck(self):
         return self._deck
@@ -150,7 +197,9 @@ class GameRound:
         if not draw:
             winner[0].add_chips(self._community_pot)
             name = winner[0].name
+            chips = winner[0].chips
             print(f"{name} won {self._community_pot} chips")
+            print(f"{name} now has {chips} chips")
             self._community_pot = 0
             return winner
         else:
@@ -177,6 +226,7 @@ class GameRound:
             winner = winner[0]
             print(f"The Winner is {winner.name} with a {winner.hand.hand}. "
                   f"The winning cards where {winner.hand.hand_cards}.")
+
         else:
             names = []
             for win in winner:

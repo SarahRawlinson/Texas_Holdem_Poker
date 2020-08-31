@@ -21,9 +21,11 @@ class Player:
             self._starting_cards = hand
         self._hand.add_cards(hand)
 
-    def _remove_cards(self):
+    def remove_cards(self):
         self._hand.remove_cards()
-        return self._starting_cards
+        cards = self._starting_cards.copy()
+        self._starting_cards = []
+        return cards
 
     def fold(self):
         print(f"{self._name} folds!")
@@ -34,9 +36,6 @@ class Player:
 
     def _set_active(self, active):
         self._active = active
-
-    def remove_cards(self):
-        self._hand.remove_cards()
 
     def add_chips(self, amount):
         self._chips += amount
@@ -52,26 +51,26 @@ class Player:
         self.remove_chips(amount)
         return amount
 
-    def next_action(self, game_responce, bet):
+    def next_action(self, game_responce, bet, total_bet):
         if self.controller is None:
             return 0
         if game_responce == "check":
-            return self.check_for_bet(bet)
+            return self.check_for_bet(bet, total_bet)
         elif game_responce == "call":
-            self.controller.check_for_call(bet)
+            self.controller.check_for_call(bet, total_bet)
             if self.controller.fold:
                 self.fold()
                 return 0
             else:
                 if self.controller.raise_bet:
-                    new_bet = self.check_for_bet(bet)
+                    new_bet = self.check_for_bet(bet, total_bet)
                     return new_bet + bet
                 else:
                     # self.bet(bet)
                     return bet
 
-    def check_for_bet(self, bet):
-        self.controller.make_decision(bet)
+    def check_for_bet(self, bet, total_bet):
+        self.controller.make_decision(bet, total_bet)
         if self.controller.wants_to_bet:
             chips = self.controller.bet_qty
             # self.bet(chips + bet)

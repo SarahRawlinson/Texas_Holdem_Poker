@@ -152,7 +152,7 @@ class TestHand(unittest.TestCase):
         cards = Hand()
         cards.add_cards(hand)
         # as it stands ((hand score ** hand score) * sum of hand cards values)
-        self.assertEqual(cards.score, ((100 ** 100) * sum([13, 12, 11, 10, 9])))
+        self.assertEqual(cards.score, 1000 + sum([13, 12, 11, 10, 9]))
 
     def test_hand_value_low_straight(self):
         hand = [
@@ -164,7 +164,7 @@ class TestHand(unittest.TestCase):
         ]
         cards = Hand()
         cards.add_cards(hand)
-        self.assertEqual(cards.score, ((50 ** 50) * sum([1, 2, 3, 4, 5])))
+        self.assertEqual(cards.score, 500 + sum([1, 2, 3, 4, 5]))
 
     def test_hand_value_low_two_pair(self):
         hand = [
@@ -175,7 +175,7 @@ class TestHand(unittest.TestCase):
         ]
         cards = Hand()
         cards.add_cards(hand)
-        self.assertEqual(cards.score, ((30 ** 30) * sum([1, 1, 6, 6])))
+        self.assertEqual(cards.score, (300 + sum([1, 1, 6, 6])))
 
     def test_hand_value_pair(self):
         hand = [
@@ -186,7 +186,7 @@ class TestHand(unittest.TestCase):
         ]
         cards = Hand()
         cards.add_cards(hand)
-        self.assertEqual(cards.score, ((20 ** 20) * sum([1, 1])))
+        self.assertEqual(cards.score, (200 + sum([1, 1])))
 
     def test_hand_high_card_hand_value(self):
         hand = [
@@ -198,7 +198,7 @@ class TestHand(unittest.TestCase):
         ]
         cards = Hand()
         cards.add_cards(hand)
-        self.assertEqual(cards.score, ((10 ** 10) * sum([13])))
+        self.assertEqual(cards.score, (100 + sum([13])))
 
     def test_hands_value_vs_other_hand_value(self):
         hand_a = [
