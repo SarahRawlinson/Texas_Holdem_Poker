@@ -1,3 +1,4 @@
+from time import sleep
 class GameRound:
     def __init__(self, deck, players):
         self._deck = deck
@@ -109,6 +110,7 @@ class GameRound:
         first_round = True
         last_player = None
         while bet_chips and len(self.check_for_active_players()) > 1:
+
             players = self.check_for_active_players()
             for player in players:
                 if player.name == last_player:
@@ -134,17 +136,28 @@ class GameRound:
                 # bet = bet + needed_bet
                 full_bet = bet + current_bets
                 if full_bet > active_bet:
-                    print(f"{player.name} raises {full_bet - active_bet}")
+                    if needed_bet > 0:
+                        print(f"{player.name} raises {full_bet - active_bet}")
+                    else:
+                        print(f"{player.name} bets {full_bet}")
                     active_bet = bet + current_bets
-                    state = "call"
+                    state = ""
                     self.bet(player, bet)
-                elif bet > 0:
+                elif bet == needed_bet and needed_bet > 0:
                     print(f"{player.name} calls")
+                    self.bet(player, bet)
                     if not first_round:
-                        self.bet(player, bet)
+
                         break
                 elif player.active:
                     print(f"{player.name} checks")
+                    # self.bet(player, bet)
+                elif not player.active:
+                    print(f"{player.name} leaves the game")
+                else:
+                    print("somethings has gone wrong")
+                    self.bet(player, bet)
+                sleep(2)
             stop_run = False
             for active in self.check_for_active_players():
                 # print(player_bets[active.name])
@@ -156,6 +169,7 @@ class GameRound:
             # players = self.check_for_active_players()
             bet_chips = stop_run
             first_round = False
+
 
     def bet(self, player, amount):
         if player.chips < amount:
@@ -209,14 +223,14 @@ class GameRound:
             return winner
         else:
             if self._community_pot > 0:
-                shared_pot = self._community_pot / len(winners)
+                shared_pot = round(self._community_pot / len(winners))
                 names = []
                 for winner_name in winners:
                     winner_name.add_chips(shared_pot)
                     names.append(winner_name.name)
                 names = ", ".join(names)
                 print(f"{names} all won {shared_pot} chips")
-                self._community_pot = 0
+                self._community_pot -= (shared_pot * len(winners))
             return winners
 
     def _get_community_cards(self):
