@@ -1,5 +1,5 @@
 import random
-
+from time import sleep
 
 class AI:
     def __init__(self, player):
@@ -35,6 +35,7 @@ class AI:
         if wants_to_bluff:
             print(f"{self.player.name} decides to change change there mind")
             self.bluff()
+        # self.bet_qty = bet + self.bet_qty
 
     def bet(self):
         card_amount = len(self.player.hand.cards)
@@ -80,6 +81,8 @@ class AI:
             self.try_function(random_choice)
 
     def check_for_call(self, amount, total_bet):
+        if self.player.chips == 0:
+            return
         card_amount = len(self.player.hand.cards)
         card_value = self.player.hand.score
         call = False
@@ -88,7 +91,9 @@ class AI:
         fold = False
         if amount > 5:
             if self.player.chips > amount:
-                if card_amount == 2:
+                if card_value >= 300:
+                    raise_bet = True
+                elif card_amount == 2:
                     if card_value > 200:
                         raise_bet = True
                     elif card_value >= 105:
@@ -114,8 +119,7 @@ class AI:
                         call = True
                     else:
                         fold = True
-                if card_value >= 300:
-                    raise_bet = True
+
             else:
                 if card_value >= 400:
                     all_in = True
@@ -128,7 +132,7 @@ class AI:
                 call = True
             else:
                 fold = True
-        if self.player.chips < 40:
+        if self.player.chips < 50 and raise_bet:
             raise_bet = False
             call = True
         self.call = call
@@ -137,11 +141,11 @@ class AI:
         self.fold = fold
         if raise_bet:
             print(f"{self.player.name} thinks they should raise")
-        elif call:
+        if call:
             print(f"{self.player.name} thinks they should call")
-        elif all_in:
+        if all_in:
             print(f"{self.player.name} thinks they should go all in")
-        elif fold:
+        if fold:
             print(f"{self.player.name} thinks they should fold")
 
     def drop_bet(self):
