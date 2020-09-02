@@ -42,7 +42,7 @@ class Player:
 
     def remove_chips(self, amount):
         print(f"{self._name} add {amount} chips to the pot")
-        self._chips -= amount
+        self._chips = self._chips - amount
 
     def _get_chips(self):
         return self._chips

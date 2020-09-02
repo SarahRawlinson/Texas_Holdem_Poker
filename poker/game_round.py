@@ -1,4 +1,6 @@
 from time import sleep
+
+
 class GameRound:
     def __init__(self, deck, players):
         self._deck = deck
@@ -109,14 +111,19 @@ class GameRound:
         player_bets = {}
         first_round = True
         last_player = None
+        player_all_in = False
         while bet_chips and len(self.check_for_active_players()) > 1:
 
             players = self.check_for_active_players()
             for player in players:
-                if player.name == last_player:
-                    last_player = player.name
-                    continue
-                last_player = player.name
+
+
+                # if player.name == last_player:
+                #     last_player = player.name
+                #     continue
+                # last_player = player.name
+
+
                 # print("Next player")
                 if 1 == len(self.check_for_active_players()):
                     bet_chips = False
@@ -124,17 +131,34 @@ class GameRound:
                 player_bets.setdefault(player.name, 0)
                 current_bets = int(player_bets[player.name])
                 needed_bet = int(active_bet) - int(current_bets)
+                # if player_all_in:
+                #     needed_bet = 0
+                if needed_bet < 0:
+                    needed_bet = 0
                 if needed_bet > 0:
                     print(f"{player.name} needs to bet {needed_bet} to meet the active bet of {active_bet}")
                 # if not first_round and needed_bet == 0 and player.active:
                 #     break
-                if needed_bet < 0:
-                    needed_bet = 0
+
                 bet = player.next_action(state, needed_bet, current_bets)
+                print(f"{player.name} : {bet}")
+                if player.chips <= bet:
+                    player_all_in = True
+                    active_bet = player_bets[player.name] + player.chips
+                    bet = active_bet
+                    # self.bet(player, bet)
+
+
+
+                # if a player has gone in and current player wants to bet more
+                if player_all_in and (bet + current_bets) > active_bet:
+                    bet = active_bet - current_bets
+
                 # print(bet)
                 player_bets[player.name] += int(bet)
                 # bet = bet + needed_bet
                 full_bet = bet + current_bets
+
                 if full_bet > active_bet:
                     if needed_bet > 0:
                         print(f"{player.name} raises {full_bet - active_bet}")
@@ -142,40 +166,44 @@ class GameRound:
                         print(f"{player.name} bets {full_bet}")
                     active_bet = bet + current_bets
                     state = ""
-                    self.bet(player, bet)
+                    # self.bet(player, bet)
                 elif bet == needed_bet and needed_bet > 0:
                     print(f"{player.name} calls")
-                    self.bet(player, bet)
-                    if not first_round:
-
-                        break
-                elif player.active:
-                    print(f"{player.name} checks")
                     # self.bet(player, bet)
-                elif not player.active:
-                    print(f"{player.name} leaves the game")
+                    if not first_round:
+                        self.bet(player, bet)
+                        break
                 else:
-                    print("somethings has gone wrong")
+                    print(f"{player.name} checks")
+                if player.active:
                     self.bet(player, bet)
-                sleep(2)
+
+                else:
+                    print(f"{player.name} leaves the game")
+
+                    # for active in self.check_for_active_players():
+                    #     if int(player_bets[active.name]) > int(active_bet):
+                    #         player.add_chips(int(player_bets[active.name]) - active_bet)
+                # sleep(.5)
+
             stop_run = False
             for active in self.check_for_active_players():
-                # print(player_bets[active.name])
-                # print(active.name)
-                # print(active_bet)
-                if int(player_bets[active.name]) != int(active_bet):
+                if player_all_in and int(player_bets[active.name]) > int(active_bet):
+                    self._community_pot -= int(player_bets[active.name]) - active_bet
+                    active.add_chips(int(player_bets[active.name]) - active_bet)
+
+                elif int(player_bets[active.name]) != int(active_bet):
                     stop_run = True
                     break
             # players = self.check_for_active_players()
             bet_chips = stop_run
             first_round = False
 
-
     def bet(self, player, amount):
-        if player.chips < amount:
-            amount = player.chips
-            print(f"{player.name} has gone all in")
-        self._community_pot += player.bet(amount)
+        if player.chips == amount:
+            print(f"{player.name} has gone all in!!!!!!!!!!!!")
+        player.bet(amount)
+        self._community_pot += amount
         print(f"{player.name} now has {player.chips} chips")
 
     def _get_deck(self):
@@ -223,7 +251,7 @@ class GameRound:
             return winner
         else:
             if self._community_pot > 0:
-                shared_pot = round(self._community_pot / len(winners))
+                shared_pot = int(self._community_pot / len(winners))
                 names = []
                 for winner_name in winners:
                     winner_name.add_chips(shared_pot)

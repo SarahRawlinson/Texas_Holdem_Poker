@@ -23,11 +23,7 @@ class AI:
                 wants_to_bluff = random.choice([True, False, False, False])
         else:
             if self.player.chips > 50 and self.player.hand.score >= 110:
-                print(f"{self.player.name} thinks they should bet")
-                self.wants_to_bet = True
-                self.bet()
-                self.check = False
-                wants_to_bluff = random.choice([True, False, False, False])
+                wants_to_bluff = self.desides_to_bet(wants_to_bluff)
             else:
                 print(f"{self.player.name} decides not to bet")
                 self.wants_to_bet = False
@@ -36,6 +32,14 @@ class AI:
             print(f"{self.player.name} decides to change change there mind")
             self.bluff()
         # self.bet_qty = bet + self.bet_qty
+
+    def desides_to_bet(self, wants_to_bluff):
+        print(f"{self.player.name} thinks they should bet")
+        self.wants_to_bet = True
+        self.bet()
+        self.check = False
+        wants_to_bluff = random.choice([True, False, False, False])
+        return wants_to_bluff
 
     def bet(self):
         card_amount = len(self.player.hand.cards)
