@@ -64,6 +64,7 @@ class GameRound:
         self.infinite = False
         self.game_qty = 1
         self.game_number = 0
+        self.must_bet = False
         self.rounds = {1: {"bet": 5, "cards": 0}, 2: {"bet": 0, "cards": 3}, 3: {"bet": 0, "cards": 1},
                        4: {"bet": 0, "cards": 1}}
 
@@ -121,6 +122,8 @@ class GameRound:
                 break
 
     def _new_round(self, number, bets):
+        if bets > 0:
+            self.must_bet = True
         print_game_round(number)
         print_community_cards(self._community_cards)
         players = [player for player in self.check_for_active_players() if player.controller.name == "Human"]
@@ -144,8 +147,8 @@ class GameRound:
             player.hand = community_cards
 
     def _check_for_bets(self, start_bet):
-        active_bet, bet_chips, first_round, last_player, player_all_in, player_bets = self.check_if_need_to_bet(
-            start_bet)
+        active_bet, bet_chips, first_round, last_player, player_all_in, player_bets = \
+            self.check_if_need_to_bet(start_bet)
         self.while_betting_is_true(active_bet, bet_chips, first_round, last_player, player_all_in, player_bets,
                                    start_bet)
 
@@ -163,33 +166,31 @@ class GameRound:
 
     def while_betting_is_true(self, active_bet, bet_chips, first_round,
                               last_player, player_all_in, player_bets, start_bet):
-        player_needs_to_bet = False
         if start_bet > 0:
             print("you need to bet")
-            player_needs_to_bet = True
+            self.must_bet = True
         while bet_chips and len(self.check_for_active_players()) > 1:
             players = self.check_for_active_players()
             active_bet, player_all_in = self.betting_turns_each_player(active_bet, first_round, last_player,
-                                                                       player_all_in, player_bets, players,
-                                                                       player_needs_to_bet)
+                                                                       player_all_in, player_bets, players)
             stop_run = False
             if len(player_bets) > 1:
                 stop_run = self.check_if_players_settled_bets(active_bet, player_all_in, player_bets, stop_run)
             bet_chips = stop_run
             first_round = False
 
-    def betting_turns_each_player(self, active_bet, first_round, last_player, player_all_in, player_bets, players,
-                                  player_needs_to_bet):
+    def betting_turns_each_player(self, active_bet, first_round, last_player, player_all_in, player_bets, players):
         for player in players:
             if player == last_player:
                 continue
+            if self.must_bet:
+                player.cant_fold = True
             last_player = player
             if 1 == len(self.check_for_active_players()):
                 bet_chips = False
                 break
             active_bet, bet, current_bets, full_bet, needed_bet, player_all_in = \
                 self.check_players_bet(active_bet, player, player_all_in, player_bets)
-            # bet, full_bet = self.player_has_to_bet(bet, needed_bet, player, player_needs_to_bet, full_bet)
             if full_bet > active_bet:
                 active_bet = self.a_player_wants_to_raise(active_bet, bet, current_bets, full_bet, needed_bet, player)
             elif bet == needed_bet and needed_bet > 0:
@@ -201,20 +202,19 @@ class GameRound:
                 print(f"{player.name} checks")
             self.check_if_player_leaves_game(bet, player)
             sleep(.5)
-            player_needs_to_bet = False
+            self.must_bet = False
         return active_bet, player_all_in
 
-    def player_has_to_bet(self, bet, needed_bet, player, player_needs_to_bet, full_bet):
-        if player_needs_to_bet and bet < needed_bet:
+    def player_has_to_bet(self, bet, needed_bet, player):
+        if self.must_bet and bet < needed_bet:
             print("You have to bet this round you cant fold")
             player.active = True
+            player.cant_fold = False
             if player.chips > needed_bet:
                 bet = needed_bet
-                full_bet = needed_bet
             else:
                 bet = player.chips
-                full_bet = player.chips
-        return bet, full_bet
+        return bet
 
     def check_if_player_leaves_game(self, bet, player):
         if player.active:
@@ -243,7 +243,7 @@ class GameRound:
         current_bets = int(player_bets[player.name])
         needed_bet = self.work_out_needed_bet(active_bet, current_bets, player)
         bet = player.next_action(needed_bet, current_bets)
-        # print(f"{player.name} : {bet}")
+        bet = self.player_has_to_bet(bet, needed_bet, player)
         return bet, current_bets, needed_bet
 
     @staticmethod

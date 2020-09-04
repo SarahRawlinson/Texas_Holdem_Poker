@@ -6,6 +6,7 @@ class Player:
         self._active = True
         self.controller = controller
         self._starting_cards = hand.cards
+        self.cant_fold = False
 
     def __repr__(self):
         return self._name
@@ -31,6 +32,8 @@ class Player:
         return cards
 
     def fold(self):
+        if self.cant_fold:
+            return
         print(f"{self._name} folds!")
         self._active = False
 
