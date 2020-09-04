@@ -5,7 +5,10 @@ class Player:
         self._chips = 0
         self._active = True
         self.controller = controller
-        self._starting_cards = None
+        self._starting_cards = hand.cards
+
+    def __repr__(self):
+        return self._name
 
     def best_hand(self):
         return self._hand.hand
@@ -51,7 +54,7 @@ class Player:
         self.remove_chips(amount)
         return amount
 
-    def next_action(self, game_responce, bet, total_bet):
+    def next_action(self, bet, total_bet):
         if self.controller is None:
             return 0
         if bet == 0:
@@ -66,14 +69,12 @@ class Player:
                     new_bet = self.check_for_bet(bet, total_bet)
                     return new_bet + bet
                 else:
-                    # self.bet(bet)
                     return bet
 
     def check_for_bet(self, bet, total_bet):
         self.controller.make_decision(bet, total_bet)
         if self.controller.wants_to_bet:
             chips = self.controller.bet_qty
-            # self.bet(chips + bet)
             return chips
         else:
             return 0
