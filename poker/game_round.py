@@ -95,22 +95,6 @@ class GameRound:
             if not self.infinite:
                 self.game_qty -= 1
 
-    def cards_back_to_deck(self):
-        community_cards = self._community_cards.copy()
-        self.reset_game(community_cards)
-        self._community_cards = []
-        self._deck.add_cards(community_cards)
-        print_cards_back_in_deck(self.deck.cards)
-
-    def reset_game(self, community_cards):
-        for player in self._players:
-            cards = player.remove_cards()
-            community_cards.extend(cards)
-            if player.chips > 0:
-                player.active = True
-            else:
-                player.active = False
-
     def play_rounds(self):
         for round_number in self.rounds:
             cards = self.rounds[round_number]["cards"]
@@ -354,6 +338,22 @@ class GameRound:
 
     def _get_community_pot(self):
         return self._community_pot
+
+    def cards_back_to_deck(self):
+        community_cards = self._community_cards.copy()
+        self.reset_game(community_cards)
+        self._community_cards = []
+        self._deck.add_cards(community_cards)
+        print_cards_back_in_deck(self.deck.cards)
+
+    def reset_game(self, community_cards):
+        for player in self._players:
+            cards = player.remove_cards()
+            community_cards.extend(cards)
+            if player.chips > 0:
+                player.active = True
+            else:
+                player.active = False
 
     deck = property(_get_deck)
     players = property(_get_players)
