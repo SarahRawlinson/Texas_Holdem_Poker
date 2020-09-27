@@ -7,7 +7,8 @@ def is_number(s):
 
 
 class Human:
-    def __init__(self, player):
+    def __init__(self, player, gui):
+        self._gui = gui
         self.name = "Human"
         self.fold = False
         self.player = player
@@ -19,7 +20,19 @@ class Human:
         self.raise_bet = False
         player.controller = self
 
+    def update(self, number):
+        if number > 0:
+            self.show_new_cards()
+
+    def show_new_cards(self):
+        cards = self.player.starting_hand_suit_rank()
+        print(cards[0].file_name())
+        print(cards[1].file_name())
+        self._gui.change_card_image("P1", cards[0].file_name())
+        self._gui.change_card_image("P2", cards[1].file_name())
+
     def make_decision(self, bet, total_bet):
+        # self.show_new_cards()
         if bet > 0:
             if self.raise_bet:
                 self.wants_to_bet = True
@@ -27,21 +40,22 @@ class Human:
         else:
             waiting_for_responce = True
             while waiting_for_responce:
-                answer = input(f"Your card value is {self.player.hand.score}, would you like to bet? 1: Yes, 2: No, "
-                               f"3: Fold\n")
+                # answer = input(f"Your card value is {self.player.hand.score}, would you like to bet? 1: Yes, 2: No, "
+                #                f"3: Fold\n")
+                answer = self._gui.check()
 
-                if answer == "1":
+                if answer == "1":  # bet
                     # print(f"{self.player.name} thinks they should bet")
                     self.wants_to_bet = True
                     self.check = False
                     waiting_for_responce = False
                     self.bet()
-                elif answer == "2":
+                elif answer == "2":  # check
                     # print(f"{self.player.name} decides not to bet")
                     self.wants_to_bet = False
                     self.check = True
                     waiting_for_responce = False
-                elif answer == "3":
+                elif answer == "4":  # fold
                     # print(f"{self.player.name} wants to fold")
                     self.wants_to_bet = False
                     self.player.fold()
@@ -55,7 +69,8 @@ class Human:
         waiting_for_answer = True
         amount_to_bet = 0
         while waiting_for_answer:
-            amount_to_bet = input("How much would you like to bet? \n")
+            # amount_to_bet = input("How much would you like to bet? \n")
+            amount_to_bet = self._gui.make_a_bet(self.player.chips)
             if is_number(amount_to_bet):
                 if int(amount_to_bet) <= self.player.chips:
                     waiting_for_answer = False
@@ -76,21 +91,23 @@ class Human:
         waiting_for_response = True
         while waiting_for_response:
             if amount > self.player.chips:
-                answer = input("the bet is more than you have would you like to go all in or fold? 1: All in, "
-                               "2: Fold \n")
-                if answer == "1":
+                # answer = input("the bet is more than you have would you like to go all in or fold? 1: All in, "
+                #                "2: Fold \n")
+                answer = self._gui.all_in()
+                if answer == "6":
                     all_in = True
                     waiting_for_response = False
-                elif answer == "2":
+                elif answer == "4":
                     fold = True
                     waiting_for_response = False
             else:
-                answer = input(f"your cards value is {card_value}, you need to have already bet {total_bet} you need "
-                               f"to bet at least {amount} chips. would you like to 1: Call, 2:Fold, 3: Raise? \n")
-                if answer == "1":
+                # answer = input(f"your cards value is {card_value}, you need to have already bet {total_bet} you need "
+                #                f"to bet at least {amount} chips. would you like to 1: Call, 2:Fold, 3: Raise? \n")
+                answer = self._gui.bet()
+                if answer == "5":
                     call = True
                     waiting_for_response = False
-                elif answer == "2":
+                elif answer == "4":
                     fold = True
                     waiting_for_response = False
                 elif answer == "3":

@@ -56,7 +56,8 @@ def print_cards_back_in_deck(cards):
 
 
 class GameRound:
-    def __init__(self, deck, players):
+    def __init__(self, deck, players, gui):
+        self._gui = gui
         self._deck = deck
         self._players = players
         self._community_cards = []
@@ -84,6 +85,7 @@ class GameRound:
     def play(self):
 
         while self.game_qty > 0 and len(self.check_for_active_players()) > 1:
+            self.show_new_cards()
             self.game_number += 1
             self.print_new_game()
             self._shuffle_deck()
@@ -123,12 +125,36 @@ class GameRound:
         for player in self.check_for_active_players():
             cards = self._deck.deal_cards(2)
             player.hand = cards
+            player.controller.update(2)
+
+    def show_new_cards(self):
+        cards = self._community_cards
+        if len(cards) > 0:
+            self._gui.change_card_image("C1", cards[0].file_name())
+            self._gui.change_card_image("C2", cards[1].file_name())
+            self._gui.change_card_image("C3", cards[2].file_name())
+            self._gui.change_card_image("C4", 'gray_back.png')
+            self._gui.change_card_image("C5", 'gray_back.png')
+        elif len(cards) > 3:
+            self._gui.change_card_image("C4", cards[3].file_name())
+            self._gui.change_card_image("C5", 'gray_back.png')
+        elif len(cards) > 4:
+            self._gui.change_card_image("C5", cards[4].file_name())
+        else:
+            self._gui.change_card_image("C1", 'gray_back.png')
+            self._gui.change_card_image("C2", 'gray_back.png')
+            self._gui.change_card_image("C3", 'gray_back.png')
+            self._gui.change_card_image("C4", 'gray_back.png')
+            self._gui.change_card_image("C5", 'gray_back.png')
+
 
     def _deal_community_cards(self, amount):
         community_cards = self._deck.deal_cards(amount)
         self._community_cards.extend(community_cards)
+        self.show_new_cards()
         for player in self.check_for_active_players():
             player.hand = community_cards
+
 
     def _check_for_bets(self, start_bet):
         active_bet, bet_chips, first_round, last_player, player_all_in, player_bets = \

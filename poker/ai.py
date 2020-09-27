@@ -15,6 +15,9 @@ class AI:
         self.raise_bet = False
         player.controller = self
 
+    def update(self, number):
+        return
+
     def make_decision(self, bet, total_bet):
         wants_to_bluff = False
         if bet > 0:
@@ -121,31 +124,31 @@ class AI:
         return func()
 
     def _drop_bet(self):
-        # print(f"{self.player.name} decides not to bet")
+        print(f"{self.player.name} decides not to bet")
         self.bet_qty = 0
         self.wants_to_bet = False
 
     def _no_change(self):
-        # print(f"{self.player.name} decides to stick with there first thought")
+        print(f"{self.player.name} decides to stick with there first thought")
         pass
 
     def _change_top_bet(self):
-        # print(f"{self.player.name} decides to change to bet to 30")
+        print(f"{self.player.name} decides to change to bet to 30")
         self.bet_qty = 30
         self.wants_to_bet = True
 
     def _change_high_bet(self):
-        # print(f"{self.player.name} decides to change to bet to 20")
+        print(f"{self.player.name} decides to change to bet to 20")
         self.bet_qty = 20
         self.wants_to_bet = True
 
     def _change_low_bet(self):
-        # print(f"{self.player.name} decides to change to bet to 2")
+        print(f"{self.player.name} decides to change to bet to 2")
         self.bet_qty = 2
         self.wants_to_bet = True
 
     def _change_med_bet(self):
-        # print(f"{self.player.name} decides to change to bet to 5")
+        print(f"{self.player.name} decides to change to bet to 5")
         self.bet_qty = 5
         self.wants_to_bet = True
 
@@ -164,7 +167,7 @@ class AI:
         self.all_in = all_in
         self.raise_bet = raise_bet
         self.fold = fold
-        # self._print_call_thought(all_in, call, fold, raise_bet)
+        self._print_call_thought(all_in, call, fold, raise_bet)
 
     def _check_cards_for_call(self, all_in, amount, call, card_amount, card_value, fold, raise_bet):
         if amount > 5:

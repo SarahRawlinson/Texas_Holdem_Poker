@@ -36,4 +36,9 @@ class Card:
     def __lt__(self, other):
         return self.value < other.value
 
+    def file_name(self):
+        if self.rank == "10":
+            return self.rank + self.suit[0] +  ".png"
+        return self.rank[0] + self.suit[0] + ".png"
+
     value = property(__value__)

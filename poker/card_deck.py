@@ -18,3 +18,4 @@ class CardDeck:
         cards = self.cards[:number_to_deal]
         del self.cards[:number_to_deal]
         return cards
+

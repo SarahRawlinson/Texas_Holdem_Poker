@@ -23,6 +23,7 @@ class Player:
     def _set_hand(self, hand):
         if len(self._hand.cards) == 0:
             self._starting_cards = hand
+        self.controller.update(len(self._hand.cards))
         self._hand.add_cards(hand)
 
     def remove_cards(self):
@@ -85,6 +86,9 @@ class Player:
     def _get_starting_hand(self):
         cards_as_strings = [str(card) for card in self._starting_cards]
         return ", ".join(cards_as_strings)
+
+    def starting_hand_suit_rank(self):
+        return self._starting_cards
 
     name = property(_get_name)
     hand = property(_get_hand, _set_hand)

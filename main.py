@@ -6,6 +6,7 @@ from poker.game_round import GameRound
 from poker.ai import AI
 from poker.human_player import Human, is_number
 
+
 # from main import deck, cards, hand1, hand2, player1, player2
 
 deck = CardDeck()
