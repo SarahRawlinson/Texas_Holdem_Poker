@@ -30,8 +30,6 @@ class PokerGUI:
         self.create_image_dictionary()
         self._card_back_Image = Image.open(str(os.path.join(self._img_folder, 'gray_back.png')))
         self._my_img = self.resize_image(self._card_back_Image)
-        # self._my_img  = self.resize_image(Image.open(r"C:/Users/Sarah/PycharmProjects/Texas_Holdem/PNG/7C.png"))
-        self.new_image = self.resize_image(Image.open(r"C:/Users/Sarah/PycharmProjects/Texas_Holdem/PNG/7C.png"))
         self._main()
 
     def create_image_dictionary(self):
@@ -42,6 +40,9 @@ class PokerGUI:
 
     def _main(self):
         self._quit_button()
+        self._create_text_labels()
+        self.show_text_labels_money()
+        self.show_text_labels_hand()
         self._create_player_buttons()
         self.show_player_buttons()
         self._create_community_card_labels()
@@ -49,7 +50,6 @@ class PokerGUI:
         self._create_player_card_labels()
         self.show_player_card_labels()
         self._create_bet_buttons()
-        # self.show_bet_buttons()
         self._root.mainloop()
 
     def _quit_button(self):
@@ -62,6 +62,12 @@ class PokerGUI:
         self._root.quit()
         exit()
 
+    def _create_text_labels(self):
+        self._winner_label = Label(self._frame, text="Winner: ")
+        self._pot_label = Label(self._frame, text="Pot: 0")
+        self._chips_label = Label(self._frame, text="Chips: 0")
+        self._hand_label = Label(self._frame, text="Hand: ")
+
     def _create_money_slider(self, max_value):
         self.slider = Scale(self._frame, from_=1, to=max_value, orient=HORIZONTAL)
         self._button_bet_money = Button(self._frame, text="Bet", command=lambda: self._bet_money())
@@ -73,9 +79,7 @@ class PokerGUI:
         self._button_5_player = Button(self._frame, text="5 Players", command=lambda: self._create_players(4))
 
     def _create_bet_buttons(self):
-        # call / raise / fold
-        # bet / check / fold
-        # all in / fold
+        # call / raise / fold  # bet / check / fold # all in / fold
         self._button_bet = Button(self._frame, text="Bet", command=lambda: self._bet(1))
         self._button_check = Button(self._frame, text="Check", command=lambda: self._bet(2))
         self._button_raise = Button(self._frame, text="Raise", command=lambda: self._bet(3))
@@ -93,6 +97,16 @@ class PokerGUI:
     def _create_player_card_labels(self):
         self._player_card_1 = Label(self._frame, image=self._my_img)
         self._player_card_2 = Label(self._frame, image=self._my_img)
+
+    def show_text_labels_winner(self):
+        self._winner_label.grid(row=5, column=3)
+
+    def show_text_labels_money(self):
+        self._pot_label.grid(row=0, column=3)
+        self._chips_label.grid(row=0, column=0)
+
+    def show_text_labels_hand(self):
+        self._hand_label.grid(row=11, column=4)
 
     def _show_money_slider(self):
         self.slider.grid(row=11, column=4)
@@ -135,6 +149,27 @@ class PokerGUI:
     def show_player_card_labels(self):
         self._player_card_1.grid(row=11, column=1, rowspan=5)
         self._player_card_2.grid(row=11, column=2, rowspan=5)
+        self._root.update()
+
+    def update_text_labels_winner(self, label_text):
+        self.show_text_labels_winner()
+        winner = f"Winner: {label_text}"
+        self._winner_label.config(text=winner)
+        self._root.update()
+
+    def update_text_labels_pot(self, label_text):
+        pot = f"Pot: {label_text}"
+        self._pot_label.config(text=pot)
+        self._root.update()
+
+    def update_text_labels_chips(self, label_text):
+        chips = f"Chips: {label_text}"
+        self._chips_label.config(text=chips)
+        self._root.update()
+
+    def update_text_labels_hand(self, label_text):
+        hand = f"Hand: {label_text}"
+        self._hand_label.config(text=hand)
         self._root.update()
 
     def destroy_money_slider(self):
@@ -254,43 +289,23 @@ class PokerGUI:
         game.play()
 
     def change_card_image(self, card, image_name):
-        # image_name = f"/{rank[0]}{suit[0]}.png"
         img = self._image_dic[image_name]
         print(image_name)
         if card == "C1":
-            # self._community_card_1.destroy()
             self._community_card_1.config(image=img)
-            # self._community_card_1.grid(row=10, column=1)
         elif card == "C2":
-            # self._community_card_2.destroy()
             self._community_card_2.config(image=img)
-            # self._community_card_2.grid(row=10, column=2)
         elif card == "C3":
-            # self._community_card_3.destroy()
             self._community_card_3.config(image=img)
-            # self._community_card_3.grid(row=10, column=3)
         elif card == "C4":
-            # self._community_card_4.destroy()
             self._community_card_4.config(image=img)
-            # self._community_card_4.grid(row=10, column=4)
         elif card == "C5":
-            # self._community_card_5.destroy()
             self._community_card_5.config(image=img)
-            # self._community_card_5.grid(row=10, column=5)
         elif card == "P1":
-            # self._player_card_1.grid_forget()
             self._player_card_1.config(image=img)
-            # self._player_card_1.grid(row=11, column=1, rowspan=5)
         elif card == "P2":
-            # self._player_card_2.grid_forget()
             self._player_card_2.config(image=img)
-            # self._player_card_2.grid(row=11, column=2, rowspan=5)
         self._root.update()
-
-    # def change_image(self, pic):
-    #     resize = self.resize_image(pic)
-    #     img = Label(self._frame, image=resize)
-    #     return img
 
     def resize_image(self, img):
         # (691, 1056)

@@ -21,6 +21,7 @@ class Human:
         player.controller = self
 
     def update(self, number):
+        self._gui.update_text_labels_hand(self.player.hand.hand)
         if number > 0:
             self.show_new_cards()
 
@@ -30,6 +31,7 @@ class Human:
         print(cards[1].file_name())
         self._gui.change_card_image("P1", cards[0].file_name())
         self._gui.change_card_image("P2", cards[1].file_name())
+
 
     def make_decision(self, bet, total_bet):
         # self.show_new_cards()

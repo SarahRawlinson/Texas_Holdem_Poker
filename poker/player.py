@@ -23,8 +23,8 @@ class Player:
     def _set_hand(self, hand):
         if len(self._hand.cards) == 0:
             self._starting_cards = hand
-        self.controller.update(len(self._hand.cards))
         self._hand.add_cards(hand)
+        self.controller.update(len(self._hand.cards))
 
     def remove_cards(self):
         self._hand.remove_cards()
