@@ -16,13 +16,9 @@ import os
 class PokerGUI:
     def __init__(self):
         dir_name = os.path.dirname(__file__)
-        # filename = os.path.join(dir_name, 'relative/path/to/file/you/want')
         print(dir_name)
         self._players = []
         self._root = Tk()
-        # self._img_folder = r"E:\Python Course\Python\Incomplete\learn-to-code-with-python\GUI\PNG"
-        # self._card_back_Image = Image.open(r"E:\Python Course\Python\Incomplete\learn-to-code-with-python\GUI\PNG"
-        #                                    r"\gray_back.png")
         self._img_folder = os.path.join(dir_name, 'PNG')
         self._card_back_Image = Image.open(str(os.path.join(self._img_folder, 'gray_back.png')))
         self._my_img = self.resize_image(self._card_back_Image)
