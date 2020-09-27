@@ -129,17 +129,19 @@ class GameRound:
 
     def show_new_cards(self):
         cards = self._community_cards
-        if len(cards) > 0:
+        number = int(len(cards))
+        print(number)
+        if number > 4:
+            self._gui.change_card_image("C5", cards[4].file_name())
+        elif number > 3:
+            self._gui.change_card_image("C4", cards[3].file_name())
+            self._gui.change_card_image("C5", 'gray_back.png')
+        elif number > 0:
             self._gui.change_card_image("C1", cards[0].file_name())
             self._gui.change_card_image("C2", cards[1].file_name())
             self._gui.change_card_image("C3", cards[2].file_name())
             self._gui.change_card_image("C4", 'gray_back.png')
             self._gui.change_card_image("C5", 'gray_back.png')
-        elif len(cards) > 3:
-            self._gui.change_card_image("C4", cards[3].file_name())
-            self._gui.change_card_image("C5", 'gray_back.png')
-        elif len(cards) > 4:
-            self._gui.change_card_image("C5", cards[4].file_name())
         else:
             self._gui.change_card_image("C1", 'gray_back.png')
             self._gui.change_card_image("C2", 'gray_back.png')
@@ -195,6 +197,7 @@ class GameRound:
                 continue
             if self.must_bet:
                 player.cant_fold = True
+                self.must_bet = False
             last_player = player
             if 1 == len(self.check_for_active_players()):
                 bet_chips = False
@@ -208,11 +211,13 @@ class GameRound:
                 if not first_round:
                     self.bet(player, bet)
                     break
+            elif not player.active:
+                print(f"{player.name} folds")
             else:
                 print(f"{player.name} checks")
             self.check_if_player_leaves_game(bet, player)
             sleep(.5)
-            self.must_bet = False
+
         return active_bet, player_all_in
 
     def player_has_to_bet(self, bet, needed_bet, player):

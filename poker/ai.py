@@ -13,12 +13,14 @@ class AI:
         self.bet_qty = 0
         self.all_in = False
         self.raise_bet = False
+        self.min_bet = 0
         player.controller = self
 
     def update(self, number):
         return
 
     def make_decision(self, bet, total_bet):
+        self.min_bet = bet
         wants_to_bluff = False
         if bet > 0:
             # self.check_for_call(bet)
@@ -70,6 +72,8 @@ class AI:
             amount_to_bet = self._seven_card_bet(card_value)
         else:
             amount_to_bet = 2
+        if self.player.cant_fold and amount_to_bet == 0:
+            amount_to_bet = self.min_bet
         return amount_to_bet
 
     def _seven_card_bet(self, card_value):
@@ -194,6 +198,8 @@ class AI:
             raise_bet = True
         elif card_value > 110:
             call = True
+        elif self.player.cant_fold:
+            call = True
         else:
             fold = True
         return call, fold, raise_bet
@@ -209,6 +215,8 @@ class AI:
             call, fold, raise_bet = self._six_card_call(call, card_value, fold, raise_bet)
         elif card_amount == 7:
             call, fold = self._seven_card_call(call, card_value, fold)
+        if self.player.cant_fold and fold:
+            fold = False
         return call, fold, raise_bet
 
     def _seven_card_call(self, call, card_value, fold):
