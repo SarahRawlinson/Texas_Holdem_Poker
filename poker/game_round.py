@@ -33,20 +33,25 @@ def print_game_number(game_number):
     print("*" * 20)
 
 
-def print_winner(winner):
+def print_winner(winner, gui):
     if len(winner) == 1:
         winner = winner[0]
+        GameRound.card_images(winner.hand.cards, gui)
+        gui.update_text_labels_winner(f"{winner.name} with {winner.hand.hand}")
         print(f"The Winner is {winner.name} with a {winner.hand.hand}. "
               f"The winning cards where {winner.hand.hand_cards}.")
     else:
         names = []
         for win in winner:
             names.append(win.name)
+            GameRound.card_images(win.hand.cards, gui)
         names = " and ".join(names)
+        gui.update_text_labels_winner(names)
         print(f"Players Draw, winners are {names} the winning hands where {winner[0].hand.hand_cards}")
 
 
-def print_community_pot(pot):
+def print_community_pot(pot, gui):
+    gui.update_text_labels_pot(pot)
     print("*" * 10)
     print(f"Community pot : {pot}")
 
@@ -116,7 +121,7 @@ class GameRound:
         print_player_cards(players)
         print("*" * 10)
         self._check_for_bets(bets)
-        print_community_pot(self._community_pot)
+        print_community_pot(self._community_pot, self._gui)
 
     def _shuffle_deck(self):
         self._deck.shuffle()
@@ -129,26 +134,48 @@ class GameRound:
 
     def show_new_cards(self):
         cards = self._community_cards
+        self.card_images(cards,self._gui)
+
+    @staticmethod
+    def card_images(cards, gui):
         number = int(len(cards))
         print(number)
-        if number > 4:
-            self._gui.change_card_image("C5", cards[4].file_name())
-        elif number > 3:
-            self._gui.change_card_image("C4", cards[3].file_name())
-            self._gui.change_card_image("C5", 'gray_back.png')
-        elif number > 0:
-            self._gui.change_card_image("C1", cards[0].file_name())
-            self._gui.change_card_image("C2", cards[1].file_name())
-            self._gui.change_card_image("C3", cards[2].file_name())
-            self._gui.change_card_image("C4", 'gray_back.png')
-            self._gui.change_card_image("C5", 'gray_back.png')
+        if number == 5:
+            gui.change_card_image("C1", cards[0].file_name())
+            gui.change_card_image("C2", cards[1].file_name())
+            gui.change_card_image("C3", cards[2].file_name())
+            gui.change_card_image("C4", cards[3].file_name())
+            gui.change_card_image("C5", cards[4].file_name())
+        elif number == 4:
+            gui.change_card_image("C1", cards[0].file_name())
+            gui.change_card_image("C2", cards[1].file_name())
+            gui.change_card_image("C3", cards[2].file_name())
+            gui.change_card_image("C4", cards[3].file_name())
+            gui.change_card_image("C5", 'gray_back.png')
+        elif number == 3:
+            gui.change_card_image("C1", cards[0].file_name())
+            gui.change_card_image("C2", cards[1].file_name())
+            gui.change_card_image("C3", cards[2].file_name())
+            gui.change_card_image("C4", 'gray_back.png')
+            gui.change_card_image("C5", 'gray_back.png')
+        elif number == 2:
+            gui.change_card_image("C1", cards[0].file_name())
+            gui.change_card_image("C2", cards[1].file_name())
+            gui.change_card_image("C3", 'gray_back.png')
+            gui.change_card_image("C4", 'gray_back.png')
+            gui.change_card_image("C5", 'gray_back.png')
+        elif number == 1:
+            gui.change_card_image("C1", cards[0].file_name())
+            gui.change_card_image("C2", 'gray_back.png')
+            gui.change_card_image("C3", 'gray_back.png')
+            gui.change_card_image("C4", 'gray_back.png')
+            gui.change_card_image("C5", 'gray_back.png')
         else:
-            self._gui.change_card_image("C1", 'gray_back.png')
-            self._gui.change_card_image("C2", 'gray_back.png')
-            self._gui.change_card_image("C3", 'gray_back.png')
-            self._gui.change_card_image("C4", 'gray_back.png')
-            self._gui.change_card_image("C5", 'gray_back.png')
-
+            gui.change_card_image("C1", 'gray_back.png')
+            gui.change_card_image("C2", 'gray_back.png')
+            gui.change_card_image("C3", 'gray_back.png')
+            gui.change_card_image("C4", 'gray_back.png')
+            gui.change_card_image("C5", 'gray_back.png')
 
     def _deal_community_cards(self, amount):
         community_cards = self._deck.deal_cards(amount)
@@ -193,6 +220,8 @@ class GameRound:
 
     def betting_turns_each_player(self, active_bet, first_round, last_player, player_all_in, player_bets, players):
         for player in players:
+            self._gui.show_text_labels_bet()
+            self._gui.update_text_labels_bet(active_bet)
             if player == last_player:
                 continue
             if self.must_bet:
@@ -215,7 +244,9 @@ class GameRound:
                 print(f"{player.name} folds")
             else:
                 print(f"{player.name} checks")
+            player.cant_fold = False
             self.check_if_player_leaves_game(bet, player)
+            self._gui.hide_text_label_bet()
             sleep(.5)
 
         return active_bet, player_all_in
@@ -301,6 +332,7 @@ class GameRound:
     def bet(self, player, amount):
         self._community_pot += player.bet(amount)
         print(f"{player.name} now has {player.chips} chips")
+        print_community_pot(self._community_pot, self._gui)
 
     def _get_deck(self):
         return self._deck
@@ -336,7 +368,7 @@ class GameRound:
                 draw = True
                 winners.append(player)
         print_community_cards(self._community_cards)
-        print_winner(winners)
+        print_winner(winners, self._gui)
         if not draw:
             return self.winners_draw(winner)
         else:

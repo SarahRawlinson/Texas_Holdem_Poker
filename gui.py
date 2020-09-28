@@ -67,6 +67,7 @@ class PokerGUI:
         self._pot_label = Label(self._frame, text="Pot: 0")
         self._chips_label = Label(self._frame, text="Chips: 0")
         self._hand_label = Label(self._frame, text="Hand: ")
+        self._bet_label = Label(self._frame, text="Active Bet: ")
 
     def _create_money_slider(self, max_value):
         self.slider = Scale(self._frame, from_=1, to=max_value, orient=HORIZONTAL)
@@ -101,16 +102,19 @@ class PokerGUI:
     def show_text_labels_winner(self):
         self._winner_label.grid(row=5, column=3)
 
+    def show_text_labels_bet(self):
+        self._bet_label.grid(row=12, column=4)
+
     def show_text_labels_money(self):
         self._pot_label.grid(row=0, column=3)
         self._chips_label.grid(row=0, column=0)
 
     def show_text_labels_hand(self):
-        self._hand_label.grid(row=11, column=4)
+        self._hand_label.grid(row=11, column=3)
 
     def _show_money_slider(self):
-        self.slider.grid(row=11, column=4)
-        self._button_bet_money.grid(row=13, column=4)
+        self.slider.grid(row=13, column=3, columnspan=3)
+        self._button_bet_money.grid(row=13, column=6)
 
     def show_player_buttons(self):
         self._button_2_player.grid(row=3, column=1)
@@ -156,6 +160,8 @@ class PokerGUI:
         winner = f"Winner: {label_text}"
         self._winner_label.config(text=winner)
         self._root.update()
+        sleep(5)
+        self.hide_text_label_winner()
 
     def update_text_labels_pot(self, label_text):
         pot = f"Pot: {label_text}"
@@ -170,6 +176,12 @@ class PokerGUI:
     def update_text_labels_hand(self, label_text):
         hand = f"Hand: {label_text}"
         self._hand_label.config(text=hand)
+        self._root.update()
+
+    def update_text_labels_bet(self, label_text):
+        self.show_text_labels_bet()
+        bet = f"Active Bet: {label_text}"
+        self._bet_label.config(text=bet)
         self._root.update()
 
     def destroy_money_slider(self):
@@ -215,6 +227,14 @@ class PokerGUI:
     def hide_player_card_labels(self):
         self._player_card_1.grid_forget()
         self._player_card_2.grid_forget()
+        self._root.update()
+
+    def hide_text_label_winner(self):
+        self._winner_label.grid_forget()
+        self._root.update()
+
+    def hide_text_label_bet(self):
+        self._bet_label.grid_forget()
         self._root.update()
 
     def _bet(self, answer):
@@ -287,6 +307,7 @@ class PokerGUI:
         # game.set_game_qty(game_qty=10)
         game.set_game_qty(infinite=True)
         game.play()
+        self.stop()
 
     def change_card_image(self, card, image_name):
         img = self._image_dic[image_name]

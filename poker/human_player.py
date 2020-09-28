@@ -1,3 +1,6 @@
+import os
+
+
 def is_number(s):
     try:
         float(s)
@@ -32,6 +35,8 @@ class Human:
         self._gui.change_card_image("P1", cards[0].file_name())
         self._gui.change_card_image("P2", cards[1].file_name())
 
+    def print_chips(self):
+        self._gui.update_text_labels_chips(self.player.chips)
 
     def make_decision(self, bet, total_bet):
         # self.show_new_cards()
@@ -63,7 +68,8 @@ class Human:
                     self.player.fold()
                     waiting_for_responce = False
                 else:
-                    print("Answer not valid, please try again")
+                    exit()
+                    # print("Answer not valid, please try again")
 
     def bet(self):
         card_amount = len(self.player.hand.cards)
@@ -116,7 +122,8 @@ class Human:
                     raise_bet = True
                     waiting_for_response = False
             if waiting_for_response:
-                print("No Valid Response, please try again")
+                exit()
+                # print("No Valid Response, please try again")
         self.call = call
         self.all_in = all_in
         self.raise_bet = raise_bet

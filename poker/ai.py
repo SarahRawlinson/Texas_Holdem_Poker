@@ -52,6 +52,9 @@ class AI:
         wants_to_bluff = random.choice([True, False, False, False])
         return wants_to_bluff
 
+    def print_chips(self):
+        return
+
     def bet(self):
         card_amount = len(self.player.hand.cards)
         card_value = self.player.hand.score

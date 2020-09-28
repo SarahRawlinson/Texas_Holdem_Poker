@@ -46,10 +46,13 @@ class Player:
 
     def add_chips(self, amount):
         self._chips += amount
+        self.controller.print_chips()
 
     def remove_chips(self, amount):
+
         print(f"{self._name} add {amount} chips to the pot")
         self._chips = self._chips - amount
+        self.controller.print_chips()
 
     def _get_chips(self):
         return self._chips
