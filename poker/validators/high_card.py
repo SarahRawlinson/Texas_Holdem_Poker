@@ -19,6 +19,7 @@ class HighCard:
         return self._hand[0].value
 
     is_valid = property(_is_valid)
+    cards = property(_high_card)
     high_card = property(_high_card)
     name = property(_get_name)
     value = property(_high_card_value)

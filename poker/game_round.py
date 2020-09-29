@@ -36,17 +36,19 @@ def print_game_number(game_number):
 def print_winner(winner, gui):
     if len(winner) == 1:
         winner = winner[0]
-        GameRound.card_images(winner.hand.cards, gui)
+        GameRound.card_images(winner.hand.cards_in_hand, gui)
         gui.update_text_labels_winner(f"{winner.name} with {winner.hand.hand}")
         print(f"The Winner is {winner.name} with a {winner.hand.hand}. "
               f"The winning cards where {winner.hand.hand_cards}.")
     else:
         names = []
+        hand = ""
         for win in winner:
             names.append(win.name)
-            GameRound.card_images(win.hand.cards, gui)
+            hand = win.hand.hand
+            GameRound.card_images(win.hand.cards_in_hand, gui)
         names = " and ".join(names)
-        gui.update_text_labels_winner(names)
+        gui.update_text_labels_winner(f"{names} with {hand}")
         print(f"Players Draw, winners are {names} the winning hands where {winner[0].hand.hand_cards}")
 
 

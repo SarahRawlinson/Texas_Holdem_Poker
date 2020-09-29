@@ -101,7 +101,7 @@ class Human:
             if amount > self.player.chips:
                 # answer = input("the bet is more than you have would you like to go all in or fold? 1: All in, "
                 #                "2: Fold \n")
-                answer = self._gui.all_in()
+                answer = self._gui.all_in(self.player.chips)
                 if answer == "6":
                     all_in = True
                     waiting_for_response = False

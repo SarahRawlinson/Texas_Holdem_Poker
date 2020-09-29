@@ -23,7 +23,7 @@ class Straight:
         high_straight = []
         for rank in ranks:
             list_card = ranks[rank]["cards"][0]
-            if last_value > 0 and (last_value - 1) == ranks[rank]["value"]:
+            if (last_value - 1) == ranks[rank]["value"] or last_value == 0:  # last_value > 0 and
                 straight += 1
                 straight_cards.extend(ranks[rank]["cards"])
                 high_straight.append(list_card)
@@ -54,7 +54,7 @@ class Straight:
         return self._is_valid
 
     def _get_high_straight(self):
-        return self._high_straight
+        return self._high_straight[:5]
 
     def _get_value(self):
         return self._value
@@ -69,5 +69,3 @@ class Straight:
     high_straight = property(_get_high_straight)
     value = property(_get_value)
     cards = property(_get_high_straight)
-
-

@@ -8,9 +8,9 @@ from poker.validators import Straight
 class Hand:
 
     def __init__(self, cards=None):
+        self._cards_in_hand = []
         self._set_up_hand(cards)
         self._hand_dictionary = self.__hand_dictionary
-        self._cards = []
 
     def __lt__(self, other):
         return self.score < other.score
@@ -31,7 +31,7 @@ class Hand:
         self._set_up_hand(cards=None)
 
     def _set_up_hand(self, cards):
-        self._hand_dictionary = self.__hand_dictionary        
+        self._hand_dictionary = self.__hand_dictionary
         self._hand = "No Hand"
         self._score = 0
         self._hand_cards_value = 0
@@ -41,7 +41,7 @@ class Hand:
             self.__hand__()
         else:
             self._cards = []
-            
+
     def __hand__(self):
         hands = self._hand_dictionary
         self._check_hands()
@@ -87,6 +87,7 @@ class Hand:
 
     def _check_high_score(self):
         high_card = HighCard(self._cards)
+        self._cards_in_hand = high_card.cards
         if high_card.is_valid:
             self._set_hand("High Card", high_card.value, high_card.high_card)
 
@@ -94,41 +95,53 @@ class Hand:
         pair = Duplicated(cards, 2)
         if pair.is_valid:
             if self._hand_true("Pair"):
+                self._cards_in_hand = []
+                self._cards_in_hand.extend(pair.cards)
+                self._cards_in_hand.extend(self._get_hand_cards("Pair"))
                 self._set_hand("Two Pair", pair.value + self._get_hand_value("Pair"),
                                pair.cards + self._get_hand_cards("Pair"))
             else:
+                self._cards_in_hand = pair.cards
                 self._set_hand("Pair", pair.value, pair.cards)
 
     def _check_three_of_kind(self, cards):
         three = Duplicated(cards, 3)
         if three.value > self._get_hand_value("Three of a Kind"):
+            self._cards_in_hand = three.cards
             self._set_hand("Three of a Kind", three.value, cards)
 
     def _check_four_of_kind(self, cards):
         four = Duplicated(cards, 4)
         if four.value > self._get_hand_value("Four of a Kind"):
+            self._cards_in_hand = four.cards
             self._set_hand("Four of a Kind", four.value, cards)
 
     def _check_full_house(self):
         if self._hand_true("Pair") and self._hand_true("Three of a Kind"):
-            value = self._get_hand_value("Pair") + self._get_hand_value("Two Pair")
-            cards = self._get_hand_cards("Pair") + self._get_hand_cards("Two Pair")
+            value = self._get_hand_value("Pair") + self._get_hand_value("Three of a Kind")
+            cards = []
+            cards.extend(self._get_hand_cards("Pair"))
+            cards.extend(self._get_hand_cards("Three of a Kind"))
+            self._cards_in_hand = cards
             self._set_hand("Full House", value, cards)
 
     def _check_for_flush(self, cards):
         flush = Flush(cards)
         if flush.is_valid:
+            self._cards_in_hand = flush.cards
             self._set_hand("Flush", flush.value, flush.cards)
 
     def _check_for_straight(self, ranks, suits):
         straight = Straight(ranks, suits)
         if straight.is_valid:
+            self._cards_in_hand = straight.cards
             self._set_hand("Straight", straight.value, straight.cards)
 
     def _check_for_straight_flush(self):
         if self._hand_true("Straight") and self._hand_true("Flush"):
             straight_flush = Flush(self._get_hand_cards("Straight"))
             if straight_flush.is_valid:
+                self._cards_in_hand = straight_flush.cards
                 self._set_hand("Straight Flush", straight_flush.value, straight_flush.cards)
 
     def _check_for_royal_flush(self):
@@ -153,6 +166,9 @@ class Hand:
         cards_as_strings = [str(card) for card in self._hand_cards]
         return ", ".join(cards_as_strings)
 
+    def _get_cards_in_hand(self):
+        return self._cards_in_hand
+
     @property
     def __hand_dictionary(self):
         hands = {
@@ -169,9 +185,9 @@ class Hand:
         }
         return hands
 
+    cards_in_hand = property(_get_cards_in_hand)
     hand = property(_return_hand)
     score = property(_return_score)
     value = property(_return_value)
     cards = property(_return_cards)
     hand_cards = property(_return_hand_cards)
-
