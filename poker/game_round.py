@@ -1,7 +1,8 @@
 from time import sleep
 
 
-def print_game_round(number):
+def print_game_round(number, gui):
+    gui.update_text_labels_round(number)
     print("*" * 20)
     print(f"round {number} betting")
     print("*" * 20)
@@ -26,7 +27,8 @@ def print_player_cards(players):
         print(f"Hand: {player.hand.hand_cards}")
 
 
-def print_game_number(game_number):
+def print_game_number(game_number, gui):
+    gui.update_text_labels_game(game_number)
     print("*" * 50)
     print("#" * 50)
     print(f"New game!, Game {game_number}")
@@ -81,7 +83,7 @@ class GameRound:
         self.game_qty = game_qty
 
     def print_new_game(self):
-        print_game_number(self.game_number)
+        print_game_number(self.game_number, self._gui)
         names = []
         for player in self.check_for_active_players():
             names.append(player.name)
@@ -90,8 +92,9 @@ class GameRound:
         print("*" * 20)
 
     def play(self):
-
+        self._gui.show_text_labels_players()
         while self.game_qty > 0 and len(self.check_for_active_players()) > 1:
+            self._gui.update_text_labels_players(self.check_for_active_players())
             self.show_new_cards()
             self.game_number += 1
             self.print_new_game()
@@ -117,11 +120,11 @@ class GameRound:
     def _new_round(self, number, bets):
         if bets > 0:
             self.must_bet = True
-        print_game_round(number)
+        print_game_round(number, self._gui)
         print_community_cards(self._community_cards)
         players = [player for player in self.check_for_active_players() if player.controller.name == "Human"]
-        print_player_cards(players)
-        print("*" * 10)
+        # print_player_cards(players)
+        # print("*" * 10)
         self._check_for_bets(bets)
         print_community_pot(self._community_pot, self._gui)
 
@@ -136,7 +139,7 @@ class GameRound:
 
     def show_new_cards(self):
         cards = self._community_cards
-        self.card_images(cards,self._gui)
+        self.card_images(cards, self._gui)
 
     @staticmethod
     def card_images(cards, gui):
@@ -186,7 +189,6 @@ class GameRound:
         for player in self.check_for_active_players():
             player.hand = community_cards
 
-
     def _check_for_bets(self, start_bet):
         active_bet, bet_chips, first_round, last_player, player_all_in, player_bets = \
             self.check_if_need_to_bet(start_bet)
@@ -222,6 +224,8 @@ class GameRound:
 
     def betting_turns_each_player(self, active_bet, first_round, last_player, player_all_in, player_bets, players):
         for player in players:
+            self._gui.update_text_labels_players(self.check_for_active_players())
+            self._gui.update_text_labels_info(f"{player}'s Turn To Bet.")
             self._gui.show_text_labels_bet()
             self._gui.update_text_labels_bet(active_bet)
             if player == last_player:
@@ -236,20 +240,24 @@ class GameRound:
             active_bet, bet, current_bets, full_bet, needed_bet, player_all_in = \
                 self.check_players_bet(active_bet, player, player_all_in, player_bets)
             if full_bet > active_bet:
+
                 active_bet = self.a_player_wants_to_raise(active_bet, bet, current_bets, full_bet, needed_bet, player)
             elif bet == needed_bet and needed_bet > 0:
+                self._gui.update_text_labels_info(f"{player} calls.")
                 print(f"{player.name} calls")
                 if not first_round:
                     self.bet(player, bet)
                     break
             elif not player.active:
+                self._gui.update_text_labels_info(f"{player} folds.")
                 print(f"{player.name} folds")
             else:
+                self._gui.update_text_labels_info(f"{player} checks.")
                 print(f"{player.name} checks")
             player.cant_fold = False
             self.check_if_player_leaves_game(bet, player)
             self._gui.hide_text_label_bet()
-            sleep(.5)
+            sleep(2)
 
         return active_bet, player_all_in
 
@@ -303,11 +311,13 @@ class GameRound:
             print(f"{player.name} needs to bet {needed_bet} to meet the active bet of {active_bet}")
         return needed_bet
 
-    @staticmethod
-    def a_player_wants_to_raise(active_bet, bet, current_bets, full_bet, needed_bet, player):
+    # @staticmethod
+    def a_player_wants_to_raise(self, active_bet, bet, current_bets, full_bet, needed_bet, player):
         if needed_bet > 0:
+            self._gui.update_text_labels_info(f"{player} raises {full_bet - active_bet}.")
             print(f"{player.name} raises {full_bet - active_bet}")
         else:
+            self._gui.update_text_labels_info(f"{player} bets {full_bet}.")
             print(f"{player.name} bets {full_bet}")
         active_bet = bet + current_bets
         return active_bet

@@ -2,6 +2,7 @@ import random
 from time import sleep
 
 
+
 class AI:
     def __init__(self, player):
         self.name = "AI"
